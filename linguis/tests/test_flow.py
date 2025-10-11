@@ -42,8 +42,11 @@ def test_for() -> None:
     forstmt.eval(env)
     assert env.get("sum") == 6
 
-def test_builtin_assert() -> None:
+def test_builtins_size_and_assert() -> None:
     env = Environment()
+    # size builtin
+    res = FunctionCall(Identifier("size"), [ListLiteral([Number(1), Number(2)])]).eval(env)
+    assert res == 2
 
     # assert builtin should raise on false
     with pytest.raises(EvaluationError):
