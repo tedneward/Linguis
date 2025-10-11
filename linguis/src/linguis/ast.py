@@ -67,8 +67,9 @@ class Environment:
         # if not found in current chain, try parent environment
         if self.parent is not None:
             try:
-                self.log(f"Trying '{name}' to {value} in parent")
-                self.parent.set(name, value)
+                self.log(f"Checking parent environment for variable '{name}'")
+                self.parent.get(name)  # just to see if it exists
+                self.parent.set(name, value) # if we're still here, it exists
                 return
             except EvaluationError:
                 pass
