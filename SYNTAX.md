@@ -73,7 +73,6 @@ expression
  | expression op=( '==' | '!=' ) expression             #eqExpression
  | expression '&&' expression                           #andExpression
  | expression '||' expression                           #orExpression
- | expression '?' expression ':' expression             #ternaryExpression
  | expression In expression                             #inExpression
  | Number                                               #numberExpression
  | Bool                                                 #boolExpression

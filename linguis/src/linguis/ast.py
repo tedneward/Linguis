@@ -108,6 +108,7 @@ class Node:
 
 
 class Block(Node):
+    """A block of statements, with its own scope."""
     def __init__(self, statements: Sequence[Node]) -> None:
         self.statements = list(statements)
 
@@ -121,6 +122,7 @@ class Block(Node):
 
 
 class Number(Node):
+    """A numeric literal (float)."""
     def __init__(self, value: float) -> None:
         self.value = value
 
@@ -129,6 +131,7 @@ class Number(Node):
 
 
 class Bool(Node):
+    """A boolean literal."""
     def __init__(self, value: bool) -> None:
         self.value = value
 
@@ -137,11 +140,13 @@ class Bool(Node):
 
 
 class Null(Node):
+    """A null literal."""
     def eval(self, env: Environment) -> None:
         return None
 
 
 class String(Node):
+    """A string literal."""
     def __init__(self, value: str) -> None:
         self.value = value
 
@@ -150,6 +155,7 @@ class String(Node):
 
 
 class Identifier(Node):
+    """An identifier (variable or function name)."""
     def __init__(self, name: str) -> None:
         self.name = name
 
@@ -158,6 +164,7 @@ class Identifier(Node):
 
 
 class Assignment(Node):
+    """An assignment expression."""
     def __init__(self, name: str, expr: Node) -> None:
         self.name = name
         self.expr = expr
@@ -169,6 +176,7 @@ class Assignment(Node):
 
 
 class BinaryOp(Node):
+    """A binary operation expression. Supports arithmetic, comparison, logical ops."""
     def __init__(self, left: Node, op: str, right: Node) -> None:
         self.left = left
         self.op = op
@@ -214,6 +222,7 @@ class BinaryOp(Node):
 
 
 class UnaryOp(Node):
+    """A unary operation expression. Supports negation and logical NOT."""
     def __init__(self, op: str, expr: Node) -> None:
         self.op = op
         self.expr = expr
@@ -225,19 +234,6 @@ class UnaryOp(Node):
         if self.op == "!":
             return not v
         raise EvaluationError(f"unknown unary operator: {self.op}")
-
-
-class Ternary(Node):
-    def __init__(self, cond: Node, if_true: Node, if_false: Node) -> None:
-        self.cond = cond
-        self.if_true = if_true
-        self.if_false = if_false
-
-    def eval(self, env: Environment) -> Any:
-        if self.cond.eval(env):
-            return self.if_true.eval(env)
-        return self.if_false.eval(env)
-
 
 class ListLiteral(Node):
     def __init__(self, items: Sequence[Node]) -> None:

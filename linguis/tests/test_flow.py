@@ -3,7 +3,7 @@ import pytest
 from linguis.ast import (
     Environment, 
     Block, Identifier, 
-    UnaryOp, BinaryOp, Ternary,
+    UnaryOp, BinaryOp, 
     Assignment, Number, Bool, Null, String,
     FunctionDecl, Return, FunctionCall, 
     ListLiteral, Index, 
@@ -14,6 +14,7 @@ from linguis.ast import (
 def test_if() -> None:
     env = Environment()
     # if/else
+    Assignment("a", Number(0)).eval(env)
     ifstmt = IfStatement(Bool(True), Block([Assignment("a", Number(7))]), Block([Assignment("a", Number(8))]))
     ifstmt.eval(env)
     assert env.get("a") == 7

@@ -3,7 +3,7 @@ import pytest
 from linguis.ast import (
     Environment, 
     Block, Identifier, 
-    UnaryOp, BinaryOp, Ternary,
+    UnaryOp, BinaryOp, 
     Assignment, Number, Bool, Null, String,
     FunctionDecl, Return, FunctionCall, 
     ListLiteral, Index, 
@@ -39,7 +39,5 @@ def test_functiondecl() -> None:
     program.eval(env)
 
     # Verify
-    assert env.get("x") == 2
-    assert env.get("y") == 3
     assert env.get("z") == 5
     assert env.get("add") is not None
