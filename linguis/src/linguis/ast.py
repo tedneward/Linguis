@@ -36,12 +36,17 @@ class Environment:
     - Builtins are available by default.
     """
 
-    def __init__(self, parent: Optional[Environment] = None) -> None:
+    def __init__(self, parent: Optional[Environment] = None, verbose = False) -> None:
+        self.verbose = verbose
         self.scopes: List[Dict[str, Any]] = [{}]
         self.parent = parent
         if parent is None:
             # root environment: install builtins
             self._install_builtins()
+
+    def log(self, message: str) -> None:
+        if self.verbose:
+            print(message)
 
     def push(self) -> None:
         self.scopes.append({})
@@ -52,17 +57,38 @@ class Environment:
         self.scopes.pop()
 
     def set(self, name: str, value: Any) -> None:
+        # search from top scope down to global
+        for scope in reversed(self.scopes):
+            if name in scope:
+                self.log(f"Updating variable '{name}' to {value} in outer scope")
+                scope[name] = value
+                return
+
+        # if not found in current chain, try parent environment
+        if self.parent is not None:
+            try:
+                self.log(f"Trying '{name}' to {value} in parent")
+                self.parent.set(name, value)
+                return
+            except EvaluationError:
+                pass
+
         # set in the nearest (top) scope
+        self.log(f"Setting new variable '{name}' to {value} in current scope")
         self.scopes[-1][name] = value
 
     def get(self, name: str) -> Any:
         # search from top scope down to global
         for scope in reversed(self.scopes):
             if name in scope:
+                self.log(f"Retrieved variable '{name}' with value {scope[name]}")
                 return scope[name]
+
         # if not found in current chain, try parent environment
         if self.parent is not None:
+            self.log(f"Checking parent environment for variable '{name}'")
             return self.parent.get(name)
+
         raise EvaluationError(f"name '{name}' is not defined")
 
     def _install_builtins(self) -> None:
@@ -72,8 +98,6 @@ class Environment:
         self.set("assert", lambda cond: (_ for _ in ()).throw(EvaluationError("assertion failed")) if not cond else None)
         self.set("size", lambda x: len(x) if (isinstance(x, (list, str)) or x is None or hasattr(x, "__len__")) else 0)
         self.set("input", lambda prompt=None: input(prompt) if prompt is not None else input())
-        self.set("null", None)
-
 
 class Node:
     """Base class for all AST nodes."""
@@ -88,8 +112,10 @@ class Block(Node):
 
     def eval(self, env: Environment) -> Any:
         result = None
+        env.push()
         for stmt in self.statements:
             result = stmt.eval(env)
+        env.pop()
         return result
 
 

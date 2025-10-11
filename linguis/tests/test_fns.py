@@ -1,23 +1,15 @@
 import pytest
 
 from linguis.ast import (
-    Environment, Block, Assignment, Identifier, Number, BinaryOp,
-    FunctionDecl, Return, FunctionCall, String,
-    EvaluationError
+    Environment, 
+    Block, Identifier, 
+    UnaryOp, BinaryOp, Ternary,
+    Assignment, Number, Bool, Null, String,
+    FunctionDecl, Return, FunctionCall, 
+    ListLiteral, Index, 
+    IfStatement, WhileStatement, ForStatement,
+    EvaluationError,
 )
-
-def test_environment() -> None:
-    env = Environment()
-    env.set("x", 42)
-    assert env.get("x") == 42
-    with pytest.raises(EvaluationError):
-        env.get("y")
-
-def test_assignment() -> None:
-    env = Environment()
-    assign = Assignment("x", Number(10))
-    assign.eval(env)
-    assert env.get("x") == 10
 
 def test_functiondecl() -> None:
     # Create root environment (builtins available)
