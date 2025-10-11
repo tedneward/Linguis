@@ -1,2 +1,40 @@
 # Linguis
 A procedural programming language with swappable syntax
+
+## Intent
+Programming languages have, almost since their inception, assumed a fixed syntax that is rooted in English for its keywords, with relatively few exceptions. Pascal has `PROGRAM`, `FUNCTION`, `VAR`, and so on. C has `if`/`else`, `for`, `while`. Even homoiconic languages like Lisp use English nouns for its forms.
+
+When I was in college, though, I took a trip to visit some friends in Belgium, and they had a French computer there--complete with its own version of French BASIC, where all the keywords were in--you guessed it--French. It took me a hot second to map the keywords I knew to their French equivalents, and definitely made reading the code an extra level harder.
+
+Now, in 2025, we still see most of our popular programming languages based on English keywords, which makes me wonder: Why? Don't get me wrong, as a native English speaker, I am happy that my native tongue is the default *lingua franca* for the programming industry, but in an era where we have literally gigs of RAM to throw at a problem, why are we continually enforcing English as a necessary prerequisite for programming?
+
+Thus, Linguis: A programming language (procedural, since this is a POC) whose keywords are "pluggable" and in several sets, so that those of non-native English speaking descent can program in their mother tongue.
+
+## Design
+At its heart, Linguis is not going to be all that Earth-shattering in its implementation: A procedural language with some basic data types, the ability to define and call functions (taking zero to many parameters, returning a value), and so on. The emphasis will be on the parser side of the pipeline, where Linguis will use one of several possible lexers/parsers to parse the source code, based on either a command-line switch or possibly an in-file directive.
+
+Beyond the flexible syntax, keep things simple: dynamically-typed, and fully procedural (no classes/objects, no metaprogramming, etc). Source-based interpreter, with a baked-in "standard library" and no mechanism to reference other files (no imports, no uses, etc).
+
+Source files should be Unicode-based from the start, so that each language can operate using its own unique character sets. This should even open it up to languages like Hebrew or Arabic, though left-to-right/right-to-left/top-to-bottom representations could create some issues for me. (I may leave that to community contributions to figure out.)
+
+### Technical
+Since this isn't aiming to be production-quality, let's use a Python back-end, since Python has an AST baked right into the language/standard library, and is a dynamic language to boot.
+
+Since I like it, we'll use ANTLR for generating the different language parsers; in fact, I think we can probably just define different lexers against a standard parser, but we'll see where that goes. In any event, I want the parser implementation to be hidden from the rest of the system, so the AST will be defined outside of ANTLR's reach, and encapsulated away from the rest of the system. ANTLR can then generate parsers for each syntax separately, or if somebody wanted to code one by hand, it should be possible.
+
+### Open thoughts
+
+* Supporting an in-file directive suggests that we could conceivably have more than one directive within a single source file, allowing for code in the same file to be written in two different syntaxes (yet refer to identifiers written in either). Supporting that could be interesting.
+
+## Plan
+First up, get the common procedural AST in place, with a number of tests to verify that once an AST instance tree is defined, it can execute.
+
+Next, set the parser abstraction in place (essentially a single source -> AST function).
+
+Then, build the ANTLR g4 for an English syntax and implement that. After that, since I know French reasonably well and German passably so, target those two languages as second and third syntaxes.
+
+Once I get to that point, I may put the idea on hold (though I'm always open to community contributions!) since the point will have been proven relatively well (or not!) by then.
+
+Goal is to have this experiment "done" by the end of 2025.
+
+-- Ted Neward (10 Oct 2025)
