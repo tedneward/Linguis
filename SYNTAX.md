@@ -24,7 +24,6 @@ functionCall
  | Println '(' expression? ')'  #printlnFunctionCall
  | Print '(' expression ')'     #printFunctionCall
  | Assert '(' expression ')'    #assertFunctionCall
- | Size '(' expression ')'      #sizeFunctionCall
  ;
 
 ifStatement
@@ -101,7 +100,6 @@ Println  : 'println';
 Print    : 'print';
 Input    : 'input';
 Assert   : 'assert';
-Size     : 'size';
 Def      : 'def';
 If       : 'if';
 Else     : 'else';
