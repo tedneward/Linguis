@@ -36,7 +36,7 @@ class Environment:
     - Builtins are available by default.
     """
 
-    def __init__(self, parent: Optional[Environment] = None, verbose = False) -> None:
+    def __init__(self, bindings: Dict[str,Any] = [], parent: Optional[Environment] = None, verbose = False) -> None:
         self.verbose = verbose
         self.scopes: List[Dict[str, Any]] = [{}]
         self.parent = parent
@@ -44,7 +44,7 @@ class Environment:
             # root environment: install builtins
             self._install_builtins()
 
-    def log(self, message: str) -> None:
+    def _log(self, message: str) -> None:
         if self.verbose:
             print(message)
 
@@ -60,14 +60,14 @@ class Environment:
         # search from top scope down to global
         for scope in reversed(self.scopes):
             if name in scope:
-                self.log(f"Updating variable '{name}' to {value} in outer scope")
+                self._log(f"Updating variable '{name}' to {value} in outer scope")
                 scope[name] = value
                 return
 
         # if not found in current chain, try parent environment
         if self.parent is not None:
             try:
-                self.log(f"Checking parent environment for variable '{name}'")
+                self._log(f"Checking parent environment for variable '{name}'")
                 self.parent.get(name)  # just to see if it exists
                 self.parent.set(name, value) # if we're still here, it exists
                 return
@@ -75,19 +75,19 @@ class Environment:
                 pass
 
         # set in the nearest (top) scope
-        self.log(f"Setting new variable '{name}' to {value} in current scope")
+        self._log(f"Setting new variable '{name}' to {value} in current scope")
         self.scopes[-1][name] = value
 
     def get(self, name: str) -> Any:
         # search from top scope down to global
         for scope in reversed(self.scopes):
             if name in scope:
-                self.log(f"Retrieved variable '{name}' with value {scope[name]}")
+                self._log(f"Retrieved variable '{name}' with value {scope[name]}")
                 return scope[name]
 
         # if not found in current chain, try parent environment
         if self.parent is not None:
-            self.log(f"Checking parent environment for variable '{name}'")
+            self._log(f"Checking parent environment for variable '{name}'")
             return self.parent.get(name)
 
         raise EvaluationError(f"name '{name}' is not defined")
@@ -236,6 +236,7 @@ class UnaryOp(Node):
         raise EvaluationError(f"unknown unary operator: {self.op}")
 
 class ListLiteral(Node):
+    """A list literal."""
     def __init__(self, items: Sequence[Node]) -> None:
         self.items = list(items)
 
@@ -244,6 +245,7 @@ class ListLiteral(Node):
 
 
 class Index(Node):
+    """Indexing into a list or string."""
     def __init__(self, value: Node, index: Node) -> None:
         self.value = value
         self.index = index
@@ -258,6 +260,7 @@ class Index(Node):
 
 
 class FunctionDecl(Node):
+    """A function declaration."""
     def __init__(self, name: str, params: Sequence[str], body: Block) -> None:
         self.name = name
         self.params = list(params)
@@ -270,6 +273,7 @@ class FunctionDecl(Node):
 
 
 class Function:
+    """A user-defined function object."""
     def __init__(self, params: Sequence[str], body: Block, defining_env: Environment) -> None:
         self.params = list(params)
         self.body = body
@@ -296,6 +300,7 @@ class Function:
 
 
 class FunctionCall(Node):
+    """A function call expression."""
     def __init__(self, callee: Node, args: Sequence[Node]) -> None:
         # callee is often Identifier but we accept any expression
         self.callee = callee
@@ -313,6 +318,7 @@ class FunctionCall(Node):
 
 
 class IfStatement(Node):
+    """An if/else statement."""
     def __init__(self, cond: Node, then_block: Block, else_block: Optional[Block] = None) -> None:
         self.cond = cond
         self.then_block = then_block
@@ -327,6 +333,7 @@ class IfStatement(Node):
 
 
 class WhileStatement(Node):
+    """A while loop statement."""
     def __init__(self, cond: Node, body: Block) -> None:
         self.cond = cond
         self.body = body
@@ -339,6 +346,7 @@ class WhileStatement(Node):
 
 
 class ForStatement(Node):
+    """A for loop statement."""
     def __init__(self, name: str, start: Node, end: Node, body: Block) -> None:
         self.name = name
         self.start = start
@@ -358,15 +366,10 @@ class ForStatement(Node):
 
 
 class Return(Node):
+    """A return statement."""
     def __init__(self, expr: Optional[Node]) -> None:
         self.expr = expr
 
     def eval(self, env: Environment) -> None:
         value = self.expr.eval(env) if self.expr is not None else None
         raise ReturnSignal(value)
-
-
-def hello() -> str:
-    print("Hello from linguis.ast!")
-    return "Hello from linguis.ast!"
-
