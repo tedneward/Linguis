@@ -1,0 +1,8 @@
+/* Binary pairs of boolean expressions */
+
+// boolean expressions
+assert(true || false);
+assert(!false);
+assert(true && true);
+assert(!true || !false);
+assert(true && (true || false));

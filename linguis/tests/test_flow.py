@@ -29,8 +29,8 @@ def test_while() -> None:
     assert env.get("i") == 3
 
 def test_for() -> None:
-    env = Environment()
-    
+    env = Environment(bindings={"println": print})
+
     # for: sum 1..3 -> 6
     Assignment("sum", Number(0)).eval(env)
     assert env.get("sum") == 0
@@ -43,7 +43,13 @@ def test_for() -> None:
     assert env.get("sum") == 6
 
 def test_builtins_size_and_assert() -> None:
-    env = Environment()
+    env = Environment(bindings={
+            "println": lambda *args: print(*args),
+            "print": lambda *args: print(*args, end=""),
+            "size": lambda lst: len(lst) if isinstance(lst, list) else 0,
+            "assert": lambda condition: condition or (_ for _ in ()).throw(EvaluationError("Assertion failed")),
+            "input": lambda prompt=None: input(prompt) if prompt is not None else input()
+        })
     # size builtin
     res = FunctionCall(Identifier("size"), [ListLiteral([Number(1), Number(2)])]).eval(env)
     assert res == 2

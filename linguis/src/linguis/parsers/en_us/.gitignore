@@ -1,0 +1,7 @@
+LinguisENUS.interp
+LinguisENUS.tokens
+LinguisENUSLexer.*
+LinguisENUSParser.*
+LinguisENUSListener.*
+LinguisENUSVisitor.*
+

@@ -2,10 +2,8 @@ import pytest
 
 from linguis.ast import (
     Environment,
-    UnaryOp, BinaryOp, 
     Assignment, Number, Bool, Null, String,
     ListLiteral, Index, 
-    EvaluationError,
 )
 
 def test_number_assignment() -> None:

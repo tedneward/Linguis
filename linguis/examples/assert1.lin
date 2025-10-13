@@ -1,0 +1,3 @@
+// simplest assert
+assert(true);
+assert(false);

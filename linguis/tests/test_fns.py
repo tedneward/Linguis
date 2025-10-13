@@ -6,14 +6,14 @@ from linguis.ast import (
     UnaryOp, BinaryOp, 
     Assignment, Number, Bool, Null, String,
     FunctionDecl, Return, FunctionCall, 
-    ListLiteral, Index, 
-    IfStatement, WhileStatement, ForStatement,
-    EvaluationError,
 )
 
 def test_functiondecl() -> None:
     # Create root environment (builtins available)
-    env = Environment()
+    env = Environment(bindings={
+            "println": lambda *args: print(*args),
+            "print": lambda *args: print(*args, end=""),
+            })
 
     # Build AST:
     # def add(a, b) { return a + b }
