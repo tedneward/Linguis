@@ -31,7 +31,7 @@ def find_parser(language: str) -> Optional[LinguisParser]:
     """
     parser_cls = parsers.get(language)
     if parser_cls:
-        return parser_cls("")
+        return parser_cls()
     return None
 
 from linguis.parsers.en_us import ENUSParser
