@@ -7,7 +7,7 @@ described in SYNTAX.md enough to run simple programs and unit tests.
 Note: this file focuses on runtime representation and evaluation semantics.
 Parsers are expected to yield instances of these classes for execution.
 """
-from __future__ import annotations
+#from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Sequence
 
@@ -26,6 +26,14 @@ class ReturnSignal(Exception):
     def __init__(self, value: Any) -> None:
         super().__init__("return")
         self.value = value
+
+
+# Forward-declaration of Environment is necessary because it is used
+# in the "parent" parameter of the Environment __init__ method.
+# Or was, at least, I suppose we could periodically remove this
+# two-line thing to see if it still is.
+class Environment:
+    pass
 
 
 class Environment:
