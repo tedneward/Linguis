@@ -54,10 +54,6 @@ class Environment:
         for k, v in bindings.items():
             self.set(k, v)
 
-    def _log(self, message: str) -> None:
-        if self.verbose:
-            print(message)
-
     def push(self) -> None:
         self.scopes.append({})
 
@@ -119,8 +115,14 @@ class Node:
 
 class Block(Node):
     """A block of statements, with its own scope."""
-    def __init__(self, statements: Sequence[Node]) -> None:
-        self.statements = list(statements)
+    def __init__(self, statements: Sequence[Node] = None) -> None:
+        if statements is None:
+            self.statements = []
+        else:
+            self.statements = list(statements)
+
+    def append(self, statement: Node) -> None:
+        self.statements.append(statement)
 
     def eval(self, env: Environment) -> Any:
         result = None
