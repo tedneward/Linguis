@@ -23,6 +23,7 @@ functionCall
  : Identifier '(' exprList? ')' #identifierFunctionCall
  | Println '(' expression? ')'  #printlnFunctionCall
  | Print '(' expression ')'     #printFunctionCall
+ | Input '(' expression ')'     #inputFunctionCall
  | Assert '(' expression ')'    #assertFunctionCall
  | Size '(' expression ')'      #sizeFunctionCall
  ;
@@ -102,6 +103,7 @@ Print    : 'print';
 Input    : 'input';
 Assert   : 'assert';
 Size     : 'size';
+
 Def      : 'def';
 If       : 'if';
 Else     : 'else';
