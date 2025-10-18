@@ -18,20 +18,23 @@ Beyond the flexible syntax, keep things simple: dynamically-typed, and fully pro
 Source files should be Unicode-based from the start, so that each language can operate using its own unique character sets. This should even open it up to languages like Hebrew or Arabic, though left-to-right/right-to-left/top-to-bottom representations could create some issues for me. (I may leave that to community contributions to figure out.)
 
 ### Technical
-Since this isn't aiming to be production-quality, let's use a Python back-end, since Python has an AST baked right into the language/standard library, and is a dynamic language to boot.
+Since this isn't aiming to be production-quality, let's use a Python back-end, since Python has an AST baked right into the language/standard library (`import ast`), and is a dynamic language to boot (which saves from having to worry about type systems and type checking and all that).
 
-Since I like it, we'll use ANTLR for generating the different language parsers; in fact, I think we can probably just define different lexers against a standard parser, but we'll see where that goes. In any event, I want the parser implementation to be hidden from the rest of the system, so the AST will be defined outside of ANTLR's reach, and encapsulated away from the rest of the system. ANTLR can then generate parsers for each syntax separately, or if somebody wanted to code one by hand, it should be possible.
+Since I like it, I'll use ANTLR for generating the different language parsers; in fact, I think we can probably just define different lexers against a standard parser, but we'll see where that goes. In any event, I want the parser implementation to be hidden from the rest of the system, so the AST will be defined outside of ANTLR's reach, and encapsulated away from the rest of the system. ANTLR can then generate parsers for each syntax separately, or if somebody wanted to code one by hand, it should be possible.
 
 ### Open thoughts
 
 * Supporting an in-file directive suggests that we could conceivably have more than one directive within a single source file, allowing for code in the same file to be written in two different syntaxes (yet refer to identifiers written in either). Supporting that could be interesting.
 
 ## Plan
-First up, get the common procedural AST in place, with a number of tests to verify that once an AST instance tree is defined, it can execute.
 
-Next, set the parser abstraction in place (essentially a single source -> AST function).
+[ ] Get the common procedural AST in place, with a number of tests to verify that once an AST instance tree is defined, it can execute.
 
-Then, build the ANTLR g4 for an English syntax and implement that. After that, since I know French reasonably well and German passably so, target those two languages as second and third syntaxes.
+[ ] Set the parser abstraction in place (essentially a single source -> AST function).
+
+[ ] Build the ANTLR g4 for an English (`en-us`) syntax and implement that. 
+
+[ ] Since I know French (`fr-fr`) reasonably well and German (`de-de`) passably so, target those two languages as second and third syntaxes. Should really be a copy of the en-us parser over and change just the keywords in the g4 parser grammar file.... emphasis on *should*.
 
 Once I get to that point, I may put the idea on hold (though I'm always open to community contributions!) since the point will have been proven relatively well (or not!) by then.
 
