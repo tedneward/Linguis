@@ -28,13 +28,15 @@ Since I like it, I'll use ANTLR for generating the different language parsers; i
 
 ## Plan
 
-[ ] Get the common procedural AST in place, with a number of tests to verify that once an AST instance tree is defined, it can execute.
+- [x] Get the common procedural AST in place, with a number of tests to verify that once an AST instance tree is defined, it can execute. **Caveat:** First pass, I created my own AST; however, the goal was/is to use the Python AST, so see subsequent steps.
 
-[ ] Set the parser abstraction in place (essentially a single source -> AST function).
+- [x] Set the parser abstraction in place (essentially a single source -> AST function).
 
-[ ] Build the ANTLR g4 for an English (`en-us`) syntax and implement that. 
+- [x] Build the ANTLR g4 for an English (`en-us`) syntax and implement that. 
 
-[ ] Since I know French (`fr-fr`) reasonably well and German (`de-de`) passably so, target those two languages as second and third syntaxes. Should really be a copy of the en-us parser over and change just the keywords in the g4 parser grammar file.... emphasis on *should*.
+- [ ] Migrate off of my AST and over to Python's AST.
+
+- [ ] Since I know French (`fr-fr`) reasonably well and German (`de-de`) passably so, target those two languages as second and third syntaxes. Should really be a copy of the en-us parser over and change just the keywords in the g4 parser grammar file.... emphasis on *should*.
 
 Once I get to that point, I may put the idea on hold (though I'm always open to community contributions!) since the point will have been proven relatively well (or not!) by then.
 
