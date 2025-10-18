@@ -7,7 +7,7 @@ described in SYNTAX.md enough to run simple programs and unit tests.
 Note: this file focuses on runtime representation and evaluation semantics.
 Parsers are expected to yield instances of these classes for execution.
 """
-from __future__ import annotations
+#from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Sequence
 
@@ -28,25 +28,31 @@ class ReturnSignal(Exception):
         self.value = value
 
 
+# Forward-declaration of Environment is necessary because it is used
+# in the "parent" parameter of the Environment __init__ method.
+# Or was, at least, I suppose we could periodically remove this
+# two-line thing to see if it still is.
 class Environment:
-    """A simple environment / scope stack for variables and functions.
+    pass
+
+# Error messages should probably somehow be localized based on the parser
+# being used, but for now we just hard-code English messages here.
+class Environment:
+    """
+    A simple environment / scope stack for variables and functions.
 
     - Each scope is a dict mapping names -> value.
+    - Each Environment may have a parent Environment.
     - Functions are stored as Python-callable values (Function objects).
-    - Builtins are available by default.
+    - Builtins must be passed in via the bindings parameter, and are installed in the "root" scope.
     """
 
-    def __init__(self, bindings: Dict[str,Any] = [], parent: Optional[Environment] = None, verbose = False) -> None:
+    def __init__(self, bindings: Dict[str,Any] = {}, parent: Optional[Environment] = None, verbose = False) -> None:
         self.verbose = verbose
         self.scopes: List[Dict[str, Any]] = [{}]
         self.parent = parent
-        if parent is None:
-            # root environment: install builtins
-            self._install_builtins()
-
-    def _log(self, message: str) -> None:
-        if self.verbose:
-            print(message)
+        for k, v in bindings.items():
+            self.set(k, v)
 
     def push(self) -> None:
         self.scopes.append({})
@@ -60,14 +66,12 @@ class Environment:
         # search from top scope down to global
         for scope in reversed(self.scopes):
             if name in scope:
-                self._log(f"Updating variable '{name}' to {value} in outer scope")
                 scope[name] = value
                 return
 
         # if not found in current chain, try parent environment
         if self.parent is not None:
             try:
-                self._log(f"Checking parent environment for variable '{name}'")
                 self.parent.get(name)  # just to see if it exists
                 self.parent.set(name, value) # if we're still here, it exists
                 return
@@ -75,30 +79,32 @@ class Environment:
                 pass
 
         # set in the nearest (top) scope
-        self._log(f"Setting new variable '{name}' to {value} in current scope")
         self.scopes[-1][name] = value
 
     def get(self, name: str) -> Any:
         # search from top scope down to global
         for scope in reversed(self.scopes):
             if name in scope:
-                self._log(f"Retrieved variable '{name}' with value {scope[name]}")
                 return scope[name]
 
         # if not found in current chain, try parent environment
         if self.parent is not None:
-            self._log(f"Checking parent environment for variable '{name}'")
             return self.parent.get(name)
 
         raise EvaluationError(f"name '{name}' is not defined")
+    
+    def to_s(self) -> str:
+        lines = []
+        if self.parent is not None:
+            lines.append("Parent Environment:")
+            lines.append(self.parent.to_s())
+        lines.append("Current Environment Scopes:")
+        for i, scope in enumerate(self.scopes):
+            lines.append(f" Scope {i}:")
+            for k, v in scope.items():
+                lines.append(f"  {k} = {v}")
+        return "\n".join(lines)
 
-    def _install_builtins(self) -> None:
-        # minimal builtins used by tests and examples
-        self.set("print", lambda *args: print(*args, end=""))
-        self.set("println", lambda *args: print(*args))
-        self.set("assert", lambda cond: (_ for _ in ()).throw(EvaluationError("assertion failed")) if not cond else None)
-        self.set("size", lambda x: len(x) if (isinstance(x, (list, str)) or x is None or hasattr(x, "__len__")) else 0)
-        self.set("input", lambda prompt=None: input(prompt) if prompt is not None else input())
 
 class Node:
     """Base class for all AST nodes."""
@@ -109,8 +115,14 @@ class Node:
 
 class Block(Node):
     """A block of statements, with its own scope."""
-    def __init__(self, statements: Sequence[Node]) -> None:
-        self.statements = list(statements)
+    def __init__(self, statements: Sequence[Node] = None) -> None:
+        if statements is None:
+            self.statements = []
+        else:
+            self.statements = list(statements)
+
+    def append(self, statement: Node) -> None:
+        self.statements.append(statement)
 
     def eval(self, env: Environment) -> Any:
         result = None
@@ -176,6 +188,29 @@ class Assignment(Node):
 
 
 class BinaryOp(Node):
+    operations = {
+        # Maths operations
+        "+": lambda a, b: a + b, 
+        "-": lambda a, b: a - b, 
+        "*": lambda a, b: a * b, 
+        "/": lambda a, b: a / b, 
+        "%": lambda a, b: a % b, 
+        "^": lambda a, b: a ** b,
+        # Comparison and logical operations
+        ">=": lambda a, b: a >= b, 
+        "<=": lambda a, b: a <= b, 
+        ">": lambda a, b: a > b,
+        "<": lambda a, b: a < b,
+        "==": lambda a, b: a == b,
+        "!=": lambda a, b: a != b,
+        "&&": lambda a, b: bool(a) and bool(b),
+        "||": lambda a, b: bool(a) or bool(b),
+        # Membership operation
+        # I kinda feel like "in" should be parser-sensitive, maybe?
+        # This is simpler, tho
+        "in": lambda a, b: a in b,
+    }
+
     """A binary operation expression. Supports arithmetic, comparison, logical ops."""
     def __init__(self, left: Node, op: str, right: Node) -> None:
         self.left = left
@@ -185,40 +220,12 @@ class BinaryOp(Node):
     def eval(self, env: Environment) -> Any:
         a = self.left.eval(env)
         b = self.right.eval(env)
-        if self.op == "+":
-            return a + b
-        if self.op == "-":
-            return a - b
-        if self.op == "*":
-            return a * b
-        if self.op == "/":
-            return a / b
-        if self.op == "%":
-            return a % b
-        if self.op == "^":
-            return a ** b
-        if self.op == ">=":
-            return a >= b
-        if self.op == "<=":
-            return a <= b
-        if self.op == ">":
-            return a > b
-        if self.op == "<":
-            return a < b
-        if self.op == "==":
-            return a == b
-        if self.op == "!=":
-            return a != b
-        if self.op == "&&":
-            return bool(a) and bool(b)
-        if self.op == "||":
-            return bool(a) or bool(b)
-        if self.op == "in":
-            try:
-                return a in b
-            except Exception:
-                return False
-        raise EvaluationError(f"unknown binary operator: {self.op}")
+
+        operation = self.operations[self.op] if self.op in self.operations else None
+        if operation is None:
+            raise EvaluationError(f"unknown binary operator: {self.op}")
+        else:
+            return operation(a,b)
 
 
 class UnaryOp(Node):
