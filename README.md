@@ -43,3 +43,12 @@ Once I get to that point, I may put the idea on hold (though I'm always open to 
 Goal is to have this experiment "done" by the end of 2025.
 
 -- Ted Neward (10 Oct 2025)
+
+## Contents
+
+* linguis-phase1: As its name implies, this was the "first pass" at building Linguis in Python. It had its own AST, which I now consider to be a mistake--I had actually imagined using the Python AST directly, then went ahead and built my own AST for some reason. I didn't delete it from the repo (or shove it off into a branch) because I want to keep it around for a while for reference purposes.
+
+* pylinguis: Second pass, using Python AST as the result of the parser step.
+
+* antlrbox: Rather than experiment with the ANTLR grammar in a subdirectory somewhere, I want to do it here where there's less overhead. Two experiments in particular: simplifying the grammar down some, and breaking it into lexer and parser g4 files (and then just swapping out the lexer files).
+

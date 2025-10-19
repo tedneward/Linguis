@@ -1,0 +1,12 @@
+// simplest asserts
+assert(true);
+assert(false);
+assert(!true);
+assert(!false);
+
+// boolean expressions
+assert(true || false);
+assert(!false);
+assert(true && true);
+assert(!true || !false);
+assert(true && (true || false));
