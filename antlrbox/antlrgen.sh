@@ -13,4 +13,3 @@ echo Generating EN-US Linguis parser...
 echo Generating parser for antlr GUI exploration
 antlr -o . LinguisParser.g4 LinguisFRFRLexer.g4
 javac -classpath /home/linuxbrew/.linuxbrew/Cellar/antlr/4.13.2/antlr-4.13.2-complete.jar:. *.java
-
