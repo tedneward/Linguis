@@ -1,5 +1,5 @@
-from typing import Any, Dict, List, Optional, Sequence
 from ast import *
+from typing import Any, Dict, Optional
 
 class LinguisParser:
     """ A base class for parsers for Linguis. """
@@ -31,8 +31,10 @@ def find_parser(language: str) -> Optional[LinguisParser]:
     """
     parser_cls = parsers.get(language)
     if parser_cls:
+        # Instantiate and return
         return parser_cls()
     return None
 
+# Register parser *classes* here (not instances)
 #from linguis.parsers.en_us import ENUSParser
 #register_parser("en-us", ENUSParser)

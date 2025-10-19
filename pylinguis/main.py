@@ -24,8 +24,6 @@ def main() -> None:
         print(f"ERROR: Could not find parser named '{parser}'; exiting.")
         sys.exit(1)
 
-    #print(f"Using parser: {parser} to parse {incoming}")
-
     for fname in incoming:
         if not os.path.exists(fname):
             print(f"File '{fname}' does not exist!")
