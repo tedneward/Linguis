@@ -8,7 +8,7 @@
 # directory. No other parsers are generated here.
 
 #echo Generating EN-US Linguis parser...
-#antlr -Dlanguage=Python3 -visitor -o . LinguisParser.g4 LinguisENUSLexer.g4
+#antlr -Dlanguage=Python3 -visitor -o . LinguisENUS.g4
 
 echo Generating parser for antlr GUI exploration
 antlr -visitor -o . LinguisParser.g4 LinguisENUSLexer.g4
