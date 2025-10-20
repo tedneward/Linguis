@@ -1,4 +1,4 @@
-lexer grammar LinguisENUSLexer;
+lexer grammar LinguisLexer;
 
 Println  : 'println';
 Print    : 'print';

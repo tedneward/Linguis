@@ -1,21 +1,21 @@
-lexer grammar LinguisFRFRLexer;
+lexer grammar LinguisLexer;
 
-Println  : 'imprimerdb';
-Print    : 'imprimer';
-Input    : 'saisir';
-Assert   : 'affirmer';
-Size     : 'taille';
-Def      : 'définir';
-If       : 'si';
-Else     : 'autre';
-Return   : 'retour';
-For      : 'pour';
-While    : 'alors que';
+Println  : 'println';
+Print    : 'print';
+Input    : 'input';
+Assert   : 'assert';
+Size     : 'size';
+Def      : 'def';
+If       : 'if';
+Else     : 'else';
+Return   : 'return';
+For      : 'for';
+While    : 'while';
 To       : 'to';
-Do       : 'à';
-End      : 'fin';
-In       : 'dans';
-Null     : 'nulle';
+Do       : 'do';
+End      : 'end';
+In       : 'in';
+Null     : 'null';
 
 Or       : '||';
 And      : '&&';
@@ -45,15 +45,14 @@ QMark    : '?';
 Colon    : ':';
 
 Bool
- : 'vraie' 
- | 'faux'
+ : 'true' 
+ | 'false'
  ;
 
 Number
  : Int ( '.' Digit* )?
  ;
 
-// Include more Unicode characters?
 Identifier
  : [a-zA-Z_] [a-zA-Z_0-9]*
  ;
