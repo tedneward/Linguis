@@ -58,5 +58,5 @@ Goal is to have this experiment "done" by the end of 2025.
 
     * Splitting the grammar is relatively easy; lexers must begin with `lexer grammar`, parsers must begin with `parser grammar`, and if the grammar is to be loaded and used from within `grun`/`TestRig`, the *filenames* must be precisely *language*`Lexer.g4` and *language*`Parser.g4`. You cannot do what I'd been doing, which is embed the internationalization codes in the lexer name (a la `LinguisENUSLexer`). `grun` doesn't really like that. *sigh*
 
-    * 
+    * There's not a lot of obvious places to simplify the grammar, I think. I could add actions, I suppose (once I spend more time figuring out how they work in ANTLR4), but all in all it seems pretty straightforward. I think I'm going to call that part of the experiment concluded with what's in v5. (I'm keeping this whole tree around, though, for easier `grun`-based exploration and validation.)
 

@@ -1,1 +1,1 @@
-grun Linguis block ../../examples/simplest.lin -tree -gui
+grun Linguis block $1 -tree -gui
