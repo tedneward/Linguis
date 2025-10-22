@@ -46,6 +46,8 @@ Goal is to have this experiment "done" by the end of 2025.
 
 ## Contents
 
+* `syntax`: Since I can't keep two different lexers in the same directory, I created this directory to be the repository for copies of the lexers and/or general descriptions of each input language's syntax. Moved the `SYNTAX.md` file here, too, just for easier reference.
+
 * `linguis-phase1`: As its name implies, this was the "first pass" at building Linguis in Python. It had its own AST, which I now consider to be a mistake--I had actually imagined using the Python AST directly, then went ahead and built my own AST for some reason. I didn't delete it from the repo (or shove it off into a branch) because I want to keep it around for a while for reference purposes.
 
 * `pylinguis`: Second pass, using Python AST as the result of the parser step.
