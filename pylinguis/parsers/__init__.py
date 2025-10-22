@@ -36,5 +36,9 @@ def find_parser(language: str) -> Optional[LinguisParser]:
     return None
 
 # Register parser *classes* here (not instances)
-#from linguis.parsers.en_us import ENUSParser
+#from linguis.parsers.enus import ENUSParser
 #register_parser("en-us", ENUSParser)
+#from linguis.parsers.fr import FRParser
+#register_parser("fr", FRParser)
+#from linguis.parsers.de import DEParser
+#register_parser("de", DEParser)
