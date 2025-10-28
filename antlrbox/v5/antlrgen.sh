@@ -12,4 +12,4 @@
 
 echo Generating parser for antlr GUI exploration
 antlr -visitor -o . LinguisParser.g4 LinguisLexer.g4
-javac -classpath /home/linuxbrew/.linuxbrew/Cellar/antlr/4.13.2/antlr-4.13.2-complete.jar:. *.java
+javac -classpath `(brew --prefix antlr)`/antlr-4.13.2-complete.jar:. *.java

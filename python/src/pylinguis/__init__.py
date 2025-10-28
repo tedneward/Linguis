@@ -1,11 +1,18 @@
-import ast
 import os
 import sys
 
-import parsers
+import pylinguis.parsers
+
+def banner() -> str:
+    vMajor, vMinor = version()
+    return f"Linguis v{vMajor}.{vMinor}"
+
+def version() -> tuple[int, int]:
+    return [0, 2]
 
 def main() -> None:
-    print("Linguis v0.2; interpreter starting up...")
+    print(f"{banner()}")
+    print("... interpreter starting up")
     parser = "en-us"
     incoming = []
     for arg in sys.argv[1:]:
@@ -19,7 +26,7 @@ def main() -> None:
         else:
             incoming.append(arg)
 
-    p = parsers.find_parser(parser)
+    p = pylinguis.parsers.find_parser(parser)
     if not p:
         print(f"ERROR: Could not find parser named '{parser}'; exiting.")
         sys.exit(1)

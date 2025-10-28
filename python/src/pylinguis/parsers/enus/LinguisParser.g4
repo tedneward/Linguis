@@ -67,11 +67,11 @@ exprList
 expression
  : '-' expression                                       #unaryMinusExpression
  | '!' expression                                       #notExpression
- | <assoc=right> expression '^' expression              #powerExpression
- | expression op=( '*' | '/' | '%' ) expression         #multExpression
- | expression op=( '+' | '-' ) expression               #addExpression
- | expression op=( '>=' | '<=' | '>' | '<' ) expression #compExpression
- | expression op=( '==' | '!=' ) expression             #eqExpression
+ | <assoc=right> base=expression '^' expo=expression               #powerExpression
+ | left=expression op=( '*' | '/' | '%' ) right=expression         #multExpression
+ | left=expression op=( '+' | '-' ) right=expression               #addExpression
+ | left=expression op=( '>=' | '<=' | '>' | '<' ) right=expression #compExpression
+ | left=expression op=( '==' | '!=' ) right=expression             #eqExpression
  | expression '&&' expression                           #andExpression
  | expression '||' expression                           #orExpression
  | expression In expression                             #inExpression
