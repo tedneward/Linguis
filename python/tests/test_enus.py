@@ -98,16 +98,28 @@ b = 5.0 % 2.0;
     assert local_vars['a'] == 1
     assert local_vars['b'] == 1.0
 
-def test_intcomparison() -> None:
-    """Test integer comparisons (and multiple statements in a single block too!)"""
+def test_comparison() -> None:
+    """Test integer and float comparisons (and multiple statements in a single block too!)"""
 
     code = """t1 = 1 < 2;
 f1 = 1 > 2;
 t2 = 1 <= 2;
 f2 = 1 >= 2;
+t3 = 1.0 < 2.0;
+t4 = 1.0 <= 2.0;
+f3 = 1.0 > 2.0;
+f4 = 1.0 >= 2.0;
+t5 = 1 < 2.0;
+t6 = 2 > 1.0;
 """
     local_vars = run(code)
     assert local_vars['t1'] == True
     assert local_vars['t2'] == True
+    assert local_vars['t3'] == True
+    assert local_vars['t4'] == True
+    assert local_vars['t5'] == True
+    assert local_vars['t6'] == True
     assert local_vars['f1'] == False
     assert local_vars['f2'] == False
+    assert local_vars['f3'] == False
+    assert local_vars['f4'] == False
