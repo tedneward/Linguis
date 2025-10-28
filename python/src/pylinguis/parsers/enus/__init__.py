@@ -32,11 +32,11 @@ class ENUSParser(LinguisParserBase):
         are unique to each language for some reason, but I don't know what that would be.)
         """
         return { 
-            "print" : None,
-            "println" : None,
-            "input" : None,
-            "assert" : None,
-            "size" : None
+            "assert": lambda condition: condition or (_ for _ in ()).throw(EvaluationError("Assertion failed")),
+            "input": lambda prompt=None: input(prompt) if prompt is not None else input(),
+            "println": lambda *args: print(*args),
+            "print": lambda *args: print(*args, end=""),
+            "size": lambda lst: len(lst) if isinstance(lst, list) else 0,
         }
 
     def getTruthy(self, text : str) -> bool:
@@ -248,10 +248,10 @@ class ENUSParser(LinguisParserBase):
 
         # Visit a parse tree produced by LinguisParser#stringExpression.
         def visitStringExpression(self, ctx:LinguisParser.StringExpressionContext) -> ast.Constant:
-            self.logger.info("visiting StringExpression", end=":")
-            retval = ast.Constant(str(ctx.getText()), str)
-            self.logger.info(retval)
-            return self.visitChildren(ctx)
+            text = str(ctx.getText())[1:-1]
+            retval = ast.Constant(text, None)
+            self.logger.info(f"StringExpression -> {retval}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#expressionExpression.
@@ -281,8 +281,25 @@ class ENUSParser(LinguisParserBase):
 
         # Visit a parse tree produced by LinguisParser#compExpression.
         def visitCompExpression(self, ctx:LinguisParser.CompExpressionContext):
-            self.logger.info("visiting Comp Expression")
-            return self.visitChildren(ctx)
+            l = self.visit(ctx.left)
+            r = self.visit(ctx.right)
+
+            op = None
+            if ctx.GT() != None:
+                op = ast.Gt()
+            elif ctx.GTEquals() != None:
+                op = ast.GtE()
+            elif ctx.LT() != None:
+                op = ast.Lt()
+            elif ctx.LTEquals() != None:
+                op = ast.LtE()
+            else:
+                raise Exception("Unknown operator in CompExpression")
+
+            retval = ast.Compare(left=l, comparators=[r], ops=[op])
+            self.logger.info(f"CompExpression -> {retval}")
+            #return self.visitChildren(ctx)
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#nullExpression.
