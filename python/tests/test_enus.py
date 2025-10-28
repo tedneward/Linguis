@@ -54,3 +54,59 @@ def test_additionexpr() -> None:
 
     # The result of the expression should be in local_vars
     assert local_vars['a'] == 3
+
+def test_subtractionexpr() -> None:
+    """Test parsing a simple subtraction pair"""
+
+    module = parser.parse("a = 2 - 1;\n")
+    assert module is not None
+
+    # Compile and execute the AST
+    code = compile(module, filename="<ast>", mode="exec")
+    local_vars = {}
+    exec(code, {}, local_vars)
+
+    # The result of the expression should be in local_vars
+    assert local_vars['a'] == 1
+
+def test_multiplicationexpr() -> None:
+    """Test parsing a simple multiplication pair"""
+
+    module = parser.parse("a = 2 * 5;\n")
+    assert module is not None
+
+    # Compile and execute the AST
+    code = compile(module, filename="<ast>", mode="exec")
+    local_vars = {}
+    exec(code, {}, local_vars)
+
+    # The result of the expression should be in local_vars
+    assert local_vars['a'] == 10
+
+def test_divisionexpr() -> None:
+    """Test parsing a simple division pair"""
+
+    module = parser.parse("a = 4 / 2;\n")
+    assert module is not None
+
+    # Compile and execute the AST
+    code = compile(module, filename="<ast>", mode="exec")
+    local_vars = {}
+    exec(code, {}, local_vars)
+
+    # The result of the expression should be in local_vars
+    assert local_vars['a'] == 2
+
+def test_modulusexpr() -> None:
+    """Test parsing a simple modulus pair"""
+
+    module = parser.parse("a = 5 % 2;\n")
+    assert module is not None
+
+    # Compile and execute the AST
+    code = compile(module, filename="<ast>", mode="exec")
+    local_vars = {}
+    exec(code, {}, local_vars)
+
+    # The result of the expression should be in local_vars
+    assert local_vars['a'] == 1
