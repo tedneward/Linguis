@@ -36,8 +36,7 @@ def run(code, local_vars = None) -> dict:
     # Parse into the Python ast.Module
     module = parser.parse(code)
     assert module is not None
-    print(f"Parse returned: {ast.dump(module)}")
-    print(f"Equiv Python is:\n{ast.unparse(module)}")
+    print(f"Parse returned: {ast.dump(module, True, False, indent="  ", show_empty=True)}")
 
     # This little hack is necessary because if we assign to a function default,
     # and the default is a reference (not a value), we actually modify the default value!
@@ -271,7 +270,7 @@ end
     assert local_vars['a'] == 10
 
 
-def ttest_ifelseifelse() -> None:
+def test_ifelseifelse() -> None:
     """Test parsing an if"""
 
     code = """

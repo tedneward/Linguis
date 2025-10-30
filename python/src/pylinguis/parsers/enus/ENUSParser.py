@@ -122,57 +122,54 @@ class ENUSParser(LinguisParserBase):
 
 
         # Visit a parse tree produced by LinguisParser#ifStatement.
+        # This one is a little tricky, since essentially Python wants to chain
+        # each else off of a corresponding if, a la:
+        #
+        # if x:
+        #     ...
+        # elif y:
+        #     ...
+        # else:
+        #     ...
+        # 
+        # Transforms into:
+        #
+        # 
+        # Module(
+        #     body=[
+        #         If(
+        #             test=Name(id='x', ctx=Load()),
+        #             body=[
+        #                 Expr(
+        #                     value=Constant(value=Ellipsis))],
+        #             orelse=[
+        #                 If(
+        #                     test=Name(id='y', ctx=Load()),
+        #                     body=[
+        #                         Expr(
+        #                             value=Constant(value=Ellipsis))],
+        #                     orelse=[
+        #                         Expr(
+        #                             value=Constant(value=Ellipsis))])])])
+        #
         def visitIfStatement(self, ctx:LinguisParser.IfStatementContext):
+            retval = self.visit(ctx.ifStat())
 
-            # This one is a little tricky, since essentially Python wants to chain
-            # each else off of a corresponding if, a la:
-            #
-            # if x:
-            #     ...
-            # elif y:
-            #     ...
-            # else:
-            #     ...
-            # 
-            # Transforms into:
-            #
-            # 
-            # Module(
-            #     body=[
-            #         If(
-            #             test=Name(id='x', ctx=Load()),
-            #             body=[
-            #                 Expr(
-            #                     value=Constant(value=Ellipsis))],
-            #             orelse=[
-            #                 If(
-            #                     test=Name(id='y', ctx=Load()),
-            #                     body=[
-            #                         Expr(
-            #                             value=Constant(value=Ellipsis))],
-            #                     orelse=[
-            #                         Expr(
-            #                             value=Constant(value=Ellipsis))])])])
-            #
+            childct = ctx.getChildCount() - 1 # Last child is always 'end' node
+            current = retval
+            for idx in range(1, childct):     # First child is always 'if' node
+                child = ctx.getChild(idx)
+                if hasattr(child, "If") and hasattr(child, "Else"):
+                    elseifnode = self.visitElseIfStat(child)
+                    current.orelse = [ elseifnode ]
+                    current = elseifnode
+                elif hasattr(child, "Else"):
+                    elsenode = self.visitElseStat(child)
+                    current.orelse = elsenode
+                    # No need to set current, we're at the end
 
-            ifstat = self.visitIfStat(ctx.ifStat())
-
-            if ctx.elseIfStat() != None:
-                stmts = []
-                for elseif in ctx.elseIfStat():
-                    line = self.visitElseIfStat(elseif)
-                    stmts.append(line)
-                ifstat.orelse = stmts
-
-            if ctx.elseStat() != None:
-                stmt = self.visitElseStat(ctx.elseStat())
-                if ifstat.orelse == None:
-                    ifstat.orelse = stmt
-                else:
-                    ifstat.orelse.append(stmt)
-
-            self.logger.info(f"***IfStatement***: {ast.dump(ifstat)}")
-            return ifstat
+            self.logger.info(f"IfStatement -> {ast.dump(retval)}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#ifStat.
@@ -450,6 +447,7 @@ class ENUSParser(LinguisParserBase):
         ast.fix_missing_locations(module) 
             # The above is absolutely necessary, to fixup line numbers and locations
             # for the AST to be valid for compilation. Failure to fix them yields errors.
+        self.logger.info(f"Equivalent Python is\n{ast.unparse(module)}")
 
         return module
 
