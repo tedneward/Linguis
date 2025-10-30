@@ -5,14 +5,20 @@
 
 from pylinguis.parsers import find_parser
 
+import ast
+
 ########################################
 ## TODO:
 ##
 ## * Strings: indexes on strings (to substring)
-## * Lists: assignments, indexing, comparisons, whatever other operations should be supported (like `in`)
-## * Null: lots of operator tests (and determining what semantics above/beyond what Python does)
+## * Lists: assignments, indexing, comparisons, whatever other operations 
+##   should be supported (like `in`), size
+## * Null: lots of operator tests (and determining what semantics 
+##   above/beyond what Python does)
+## * Functions: function decls and invocation
+## * Builtins: invoking print(), println(), input(), etc. (This one will 
+##   require pytest manipulation, to capture stdout and provide stdin)
 ##
-
 
 ########################################
 ## Utilities and setup
@@ -26,9 +32,12 @@ assert parser is not None
 # Helper method to do the parse/compile/exec cycle 
 #
 def run(code, local_vars = None) -> dict:
-    # Compile and execute the AST
+
+    # Parse into the Python ast.Module
     module = parser.parse(code)
     assert module is not None
+    print(f"Parse returned: {ast.dump(module)}")
+    print(f"Equiv Python is:\n{ast.unparse(module)}")
 
     # This little hack is necessary because if we assign to a function default,
     # and the default is a reference (not a value), we actually modify the default value!
@@ -40,7 +49,9 @@ def run(code, local_vars = None) -> dict:
     if local_vars == None:
         local_vars = {}
 
+    # Compile it into bytecode
     code = compile(module, filename="<ast>", mode="exec")
+    # Run it!
     exec(code, {}, local_vars)
     return local_vars
 
@@ -201,9 +212,7 @@ f2 = \"Hello\" != \"Hello\";
 ########################################
 ## Control flow
 ##
-def test_if() -> None:
-    """Test parsing an if"""
-
+def test_iftrue() -> None:
     code = """
 a = 5;
 if a < 10 do
@@ -213,13 +222,33 @@ end
     local_vars = run(code)
     assert local_vars['a'] == 10
 
-def test_ifelse() -> None:
-    """Test parsing an if"""
+def test_iffalse() -> None:
+    code = """
+a = 10;
+if a < 5 do
+    a = 5;
+end
+"""
+    local_vars = run(code)
+    assert local_vars['a'] == 10
 
+def test_iftrueelse() -> None:
     code = """
 a = 5;
-if a < 1 do
-    a = 1;
+if a < 10 do
+    a = 10;
+else do
+    a = 20;
+end
+"""
+    local_vars = run(code)
+    assert local_vars['a'] == 10
+
+def test_iffalseelse() -> None:
+    code = """
+a = 20;
+if a < 5 do
+    a = 5;
 else do
     a = 10;
 end
@@ -242,7 +271,7 @@ end
     assert local_vars['a'] == 10
 
 
-def test_ifelseifelse() -> None:
+def ttest_ifelseifelse() -> None:
     """Test parsing an if"""
 
     code = """

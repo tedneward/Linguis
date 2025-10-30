@@ -50,22 +50,20 @@ class ENUSParser(LinguisParserBase):
             self.logger = parser.logger
 
         # Visit a parse tree produced by LinguisParser#block.
-        def visitBlock(self, ctx:LinguisParser.BlockContext):
+        def visitBlock(self, ctx:LinguisParser.BlockContext) -> list[ast.AST]:
             statements = []
-
-            childct = 0
-
+            #childct = 0
             for child in ctx.getChildren():
-                self.logger.info(f"Block child {childct}: {ctx.statement(childct)} {ctx.functionDecl(childct)}")
-                statements.append(self.visit(child))
-                childct += 1
+                node = self.visit(child)
+                #self.logger.info(f"Block stmt {childct}: {ast.dump(node)}")
+                statements.append(node)
+                #childct += 1
             return statements
 
 
         # Visit a parse tree produced by LinguisParser#statement.
-        def visitStatement(self, ctx:LinguisParser.StatementContext):
+        def visitStatement(self, ctx:LinguisParser.StatementContext) -> ast.Assign | ast.For | ast.If | ast.While: # Still need FunctionCall here
             retval = None
-
             if ctx.assignment() != None:
                 retval = self.visitAssignment(ctx.assignment())
             elif ctx.forStatement() != None:
@@ -79,19 +77,17 @@ class ENUSParser(LinguisParserBase):
             else:
                 raise Exception(f"Unrecognized statement: {ctx.getText()}")
 
-            self.logger.info(f"Statement \"{ctx.getText()}\" -> {retval}")
+            #self.logger.info(f"Statement \"{ctx.getText()}\" -> {ast.dump(retval)}")
             return retval
 
 
         # Visit a parse tree produced by LinguisParser#assignment.
         def visitAssignment(self, ctx:LinguisParser.AssignmentContext) -> ast.Assign:
             expr = self.visit(ctx.expression())
-
             id = str(ctx.Identifier())
-            assign = ctx.Assign() # always "="
 
             retval = ast.Assign(targets=[ast.Name(id=id, ctx=ast.Store())], value=expr)
-            self.logger.info(f"Assignment -> {retval}")
+            #self.logger.info(f"Assignment -> {ast.dump(retval)}")
             return retval
 
 
@@ -159,38 +155,52 @@ class ENUSParser(LinguisParserBase):
             #                             value=Constant(value=Ellipsis))])])])
             #
 
-            # We need a count of how many nodes there are in this
-            children = []
-            for child in ctx.getChildren():
-                children.append(child)
-
-            self.logger.info(f"IfStatement -> {len(children)} branches")
-
             ifstat = self.visitIfStat(ctx.ifStat())
-            lastnode = None
+
+            if ctx.elseIfStat() != None:
+                stmts = []
+                for elseif in ctx.elseIfStat():
+                    line = self.visitElseIfStat(elseif)
+                    stmts.append(line)
+                ifstat.orelse = stmts
 
             if ctx.elseStat() != None:
-                elsestat = self.visitElseStat(ctx.elseStat())
+                stmt = self.visitElseStat(ctx.elseStat())
+                if ifstat.orelse == None:
+                    ifstat.orelse = stmt
+                else:
+                    ifstat.orelse.append(stmt)
 
+            self.logger.info(f"***IfStatement***: {ast.dump(ifstat)}")
             return ifstat
 
 
         # Visit a parse tree produced by LinguisParser#ifStat.
-        def visitIfStat(self, ctx:LinguisParser.IfStatContext):
-            self.logger.info("visiting IfStat")
-            return self.visitChildren(ctx)
+        def visitIfStat(self, ctx:LinguisParser.IfStatContext) -> ast.If:
+            test = self.visit(ctx.expression())
+            stmts = self.visitBlock(ctx.block())
+
+            retval = ast.If(test=test, body=stmts, orelse=[])
+            self.logger.info(f"IfStat -> {ast.dump(retval)}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#elseIfStat.
-        def visitElseIfStat(self, ctx:LinguisParser.ElseIfStatContext):
-            self.logger.info("visiting ElseIfStat")
-            return self.visitChildren(ctx)
+        def visitElseIfStat(self, ctx:LinguisParser.ElseIfStatContext) -> ast.If:
+            test = self.visit(ctx.expression())
+            stmts = self.visitBlock(ctx.block())
+
+            retval = ast.If(test=test, body=stmts, orelse=[])
+            self.logger.info(f"ElseIfStat -> {ast.dump(retval)}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#elseStat.
-        def visitElseStat(self, ctx:LinguisParser.ElseStatContext):
-            self.logger.info("visiting Else Stat")
-            return self.visitChildren(ctx)
+        def visitElseStat(self, ctx:LinguisParser.ElseStatContext) -> List[ast.AST]:
+            retval = self.visitBlock(ctx.block())
+
+            self.logger.info(f"ElseStat -> {list(ast.dump(s) for s in retval)}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#functionDecl.
@@ -230,7 +240,7 @@ class ENUSParser(LinguisParserBase):
                 retval = ast.Constant(True, None)
             else:
                 retval = ast.Constant(False, None)
-            self.logger.info(f"BoolExpression -> {retval}")
+            #self.logger.info(f"BoolExpression -> {ast.dump(retval)}")
             return retval
 
 
@@ -241,7 +251,7 @@ class ENUSParser(LinguisParserBase):
                 retval = ast.Constant(float(ctx.getText()), None)
             else:
                 retval = ast.Constant(int(ctx.getText()), None)
-            self.logger.info(f"NumberExpression -> {retval}")
+            #self.logger.info(f"NumberExpression -> {ast.dump(retval)}")
             return retval
 
 
@@ -249,7 +259,7 @@ class ENUSParser(LinguisParserBase):
         def visitIdentifierExpression(self, ctx:LinguisParser.IdentifierExpressionContext):
             retval = ast.Name(ctx.getText(), ctx=ast.Load()) 
                 # Store() will need to be set by another element in the AST later once it's clear which is needed
-            self.logger.info(f"IdentifierExpression -> {retval}")
+            #self.logger.info(f"IdentifierExpression -> {ast.dump(retval)}")
             return retval
 
 
@@ -291,7 +301,7 @@ class ENUSParser(LinguisParserBase):
                 raise Exception("Unknown operator in EqExpression")
 
             retval = ast.Compare(left=l, comparators=[r], ops=[op])
-            self.logger.info(f"EqExpression -> {retval}")
+            #self.logger.info(f"EqExpression -> {ast.dump(retval)}")
             return retval
 
 
@@ -311,7 +321,7 @@ class ENUSParser(LinguisParserBase):
         def visitStringExpression(self, ctx:LinguisParser.StringExpressionContext) -> ast.Constant:
             text = str(ctx.getText())[1:-1]
             retval = ast.Constant(text, None)
-            self.logger.info(f"StringExpression -> {retval}")
+            #self.logger.info(f"StringExpression -> {ast.dump(retval)}")
             return retval
 
 
@@ -335,7 +345,7 @@ class ENUSParser(LinguisParserBase):
                 raise Exception("Unknown operator in AddExpression")
 
             retval = ast.BinOp(left=l, right=r, op=op)
-            self.logger.info(f"AddExpression -> {retval}")
+            #self.logger.info(f"AddExpression -> {ast.dump(retval)}")
             return retval
 
 
@@ -357,15 +367,14 @@ class ENUSParser(LinguisParserBase):
                 raise Exception("Unknown operator in CompExpression")
 
             retval = ast.Compare(left=l, comparators=[r], ops=[op])
-            self.logger.info(f"CompExpression -> {retval}")
-            #return self.visitChildren(ctx)
+            #self.logger.info(f"CompExpression -> {ast.dump(retval)}")
             return retval
 
 
         # Visit a parse tree produced by LinguisParser#nullExpression.
         def visitNullExpression(self, ctx:LinguisParser.NullExpressionContext):
             retval = ast.Constant(value=None)
-            self.logger.info(f"NullExpression -> {retval}")
+            #self.logger.info(f"NullExpression -> {ast.dump(retval)}")
             return retval
 
 
@@ -391,8 +400,7 @@ class ENUSParser(LinguisParserBase):
                 raise Exception("Unknown operator in MultExpression")
 
             retval = ast.BinOp(left=l, right=r, op=op)
-            self.logger.info(f"MultExpression -> {retval}")
-            #return self.visitChildren(ctx)
+            #self.logger.info(f"MultExpression -> {ast.dump(retval)}")
             return retval
 
 
@@ -421,7 +429,6 @@ class ENUSParser(LinguisParserBase):
 
 
     def parse(self, code: str) -> ast.Module:
-    #def parse(self, code: str, parsermethodname : str = "block") -> ast.Module:
         """ Parses the entire code into a Python Module node. """
 
         # TODO: Need to figure out if/how ANTLR4 supports Unicode
@@ -435,18 +442,7 @@ class ENUSParser(LinguisParserBase):
 
         # The simple way
         tree = parser.block()
-
-        # The more complicated way, designed to allow for flexible invocation
-        # of the parser from tests
-        #parsermethod = parser.__getattribute__("block")
-        #if parsermethod == None:
-        #    raise Exception(f"You tried to invoke a parser method that doesn't exist: {parsermethodname}")
-        #else:
-        #    self.logger.info(f"Parsing a {parsermethodname} from the grammar")
-        #tree = parsermethod()
-
-        self.logger.info("Tree:")
-        self.logger.info(tree.toStringTree(recog=parser))  # Debug print of parse tree
+        self.logger.info(f"Tree: {tree.toStringTree(recog=parser)}")
 
         visitor = ENUSParser.Visitor(self)
         nodes = visitor.visit(tree)

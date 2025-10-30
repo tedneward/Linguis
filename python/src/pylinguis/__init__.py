@@ -39,9 +39,9 @@ def main() -> None:
             print(f"Processing file '{fname}'...")
             module = p.parse(fname)
             code = compile(module, filename=fname, mode="exec")
-            local_vars = {}
+            localvars = {}
             globalvars = globals() # Later ask parser to fill in globals
-            exec(code, globalvars, local_vars)
+            exec(code, globalvars, localvars)
 
 if __name__ == "__main__":
     main()
