@@ -256,8 +256,6 @@ end
     assert local_vars['a'] == 10
 
 def test_ifelseif() -> None:
-    """Test parsing an if"""
-
     code = """
 a = 5;
 if a < 1 do
@@ -271,8 +269,6 @@ end
 
 
 def test_ifelseifelse() -> None:
-    """Test parsing an if"""
-
     code = """
 a = 5;
 if a < 1 do
