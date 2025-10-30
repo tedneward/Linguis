@@ -286,11 +286,23 @@ end
     local_vars = run(code)
     assert local_vars['a'] == 10
 
-
-
-
-
-
+def test_ifelseifelseifelseifelse() -> None:
+    code = """
+a = 5;
+if a < 1 do
+    a = 1;
+else if a < 2 do
+    a = 1;
+else if a < 3 do
+    a = 1;
+else if a < 10 do
+    a = 10;
+else do
+    a = 20;
+end
+"""
+    local_vars = run(code)
+    assert local_vars['a'] == 10
 
 def ttest_while() -> None:
     """Test parsing an while"""
