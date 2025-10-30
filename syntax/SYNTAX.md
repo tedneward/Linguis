@@ -1,6 +1,43 @@
-# Linguis high-level syntax and AST
+# Linguis high-level syntax and semantics
 
-In ANTLR syntax:
+Linguis is a dynamically-typed, procedural (as opposed to "functional") imperative language that supports a few core types and a few common procedural flow-control constructs.
+
+## Types
+Linguis supports boolean, integer, floating-point, string, and list types. The null literal represents no value.
+
+## Variables
+
+Like Python, Linguis variables need not be declared, and are allocated/available upon first use (which is almost always an assignment).
+
+## Operators
+
+### Unary
+Integer and floating-point types can be negated via the unary negation (`-`) operator.
+
+Strings and lists cannot be negated.
+
+### Binary
+Integer and floating-point types support all the canonical binary mathematical operators (`+`, `-`, `*`, `/`, and `%`), as well as exponential (`^`).
+
+## Flow control
+
+### Decision-making (`if`)
+
+### Finite iteration (`for`)
+
+### Infinite iteration (`while`)
+
+## Functions
+
+Functions are defined by a keyword (`def` in ENUS) followed by an identifier followed by parentheses declaring parameters. The function body is itself a block. The body is indented.
+
+Functions are invoked by using the identifier followed by parentheses, with the necessary parameters listed. 
+
+## Runtime semantics
+
+If a Linguis program violates the semantics described here, it will raise an exception and terminate; no catch-and-resume behavior is supported.
+
+## ANTLR syntax:
 
 ```
 block

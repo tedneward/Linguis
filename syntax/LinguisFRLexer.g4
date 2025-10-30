@@ -1,4 +1,5 @@
-lexer grammar LinguisFRFRLexer;
+// Bonne matin, la France!
+lexer grammar LinguisLexer;
 
 Println  : 'imprimerdb';
 Print    : 'imprimer';
@@ -10,7 +11,7 @@ If       : 'si';
 Else     : 'autre';
 Return   : 'retour';
 For      : 'pour';
-While    : 'alors que';
+While    : 'alors';
 To       : 'to';
 Do       : 'à';
 End      : 'fin';
@@ -45,7 +46,7 @@ QMark    : '?';
 Colon    : ':';
 
 Bool
- : 'vraie' 
+ : 'vrai'
  | 'faux'
  ;
 
@@ -54,6 +55,7 @@ Number
  ;
 
 // Include more Unicode characters?
+// I know we will want to include French common characters here!
 Identifier
  : [a-zA-Z_] [a-zA-Z_0-9]*
  ;

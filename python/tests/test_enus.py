@@ -14,10 +14,13 @@ parser = find_parser("en-us")
 assert parser is not None
 
 # Helper method to do the parse/compile/exec cycle 
-def run(code, local_vars = {}) -> dict:
+def run(code, local_vars = None) -> dict:
     # Compile and execute the AST
     module = parser.parse(code)
     assert module is not None
+
+    if local_vars == None:
+        local_vars = {}
 
     code = compile(module, filename="<ast>", mode="exec")
     exec(code, {}, local_vars)
@@ -123,3 +126,16 @@ t6 = 2 > 1.0;
     assert local_vars['f2'] == False
     assert local_vars['f3'] == False
     assert local_vars['f4'] == False
+
+def test_if() -> None:
+    """Test parsing an if"""
+
+    code = """
+a = 5;
+if a < 10 do
+    a = 10;
+end
+"""
+    local_vars = run(code)
+    assert local_vars['a'] == 10
+

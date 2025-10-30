@@ -32,25 +32,23 @@ Since I like it, I'll use ANTLR for generating the different language parsers; i
 
 - [x] Set the parser abstraction in place (essentially a single source -> AST function).
 
+- [x] Set up lots of tests in place to test each of the different parsers, of course.
+
 - [x] Build the ANTLR g4 for an English (`en-us`) syntax and implement that. 
 
-- [ ] Migrate off of my AST and over to Python's AST.
+- [x] Migrate off of my AST and over to Python's AST.
 
-- [ ] Since I know French (`fr-fr`) reasonably well and German (`de-de`) passably so, target those two languages as second and third syntaxes. Should really be a copy of the en-us parser over and change just the keywords in the g4 parser grammar file.... emphasis on *should*.
+- [ ] Since I know French (`fr-fr`) reasonably well and German (`de-de`) passably so, target those two languages as second and third syntaxes. Should really be a copy of the en-us parser over and change just the keywords in the g4 parser grammar file.... emphasis on *should*. Oh heck, let's do Pig Latin ("EN-PL") as well, just for fun.
 
-Once I get to that point, I may put the idea on hold (though I'm always open to community contributions!) since the point will have been proven relatively well (or not!) by then.
+- [ ] Support an inline "keyword switch" pragma (a la `#parser en-us` or `#parser fr`, whatever's stored in the parsers dictionary) to allow us to switch mid-file to a different lexer. Already-established scopes would not change. I'm thinking the driver would just scan the whole file first, find each `#parser` line, and figuratively `split()` the whole thing before handing each segment off to its own parser, and then the whole would be collected into a single `ast.Module` for execution. (Maybe?)
+
+Once I get to this point, I may put the idea on hold (though I'm always open to community contributions!) since the point will have been proven relatively well (or not!) by then.
 
 Goal is to have this experiment "done" by the end of 2025.
 
 -- Ted Neward (10 Oct 2025)
 
 ## Contents
-
-* `syntax`: Since I can't keep two different lexers in the same directory, I created this directory to be the repository for copies of the lexers and/or general descriptions of each input language's syntax. Moved the `SYNTAX.md` file here, too, just for easier reference.
-
-* `linguis-phase1`: As its name implies, this was the "first pass" at building Linguis in Python. It had its own AST, which I now consider to be a mistake--I had actually imagined using the Python AST directly, then went ahead and built my own AST for some reason. I didn't delete it from the repo (or shove it off into a branch) because I want to keep it around for a while for reference purposes.
-
-* `pylinguis`: Second pass, using Python AST as the result of the parser step.
 
 * `antlrbox`: Rather than experiment with the ANTLR grammar in a subdirectory somewhere, I want to do it here where there's less overhead. Two experiments in particular: simplifying the grammar down some, and breaking it into lexer and parser g4 files (and then just swapping out the lexer files).
 
@@ -59,4 +57,14 @@ Goal is to have this experiment "done" by the end of 2025.
     * Splitting the grammar is relatively easy; lexers must begin with `lexer grammar`, parsers must begin with `parser grammar`, and if the grammar is to be loaded and used from within `grun`/`TestRig`, the *filenames* must be precisely *language*`Lexer.g4` and *language*`Parser.g4`. You cannot do what I'd been doing, which is embed the internationalization codes in the lexer name (a la `LinguisENUSLexer`). `grun` doesn't really like that. *sigh*
 
     * There's not a lot of obvious places to simplify the grammar, I think. I could add actions, I suppose (once I spend more time figuring out how they work in ANTLR4), but all in all it seems pretty straightforward. I think I'm going to call that part of the experiment concluded with what's in v5. (I'm keeping this whole tree around, though, for easier `grun`-based exploration and validation.)
+
+* `syntax`: Since I can't keep two different lexers in the same directory, I created this directory to be the repository for copies of the lexers and/or general descriptions of each input language's syntax. Moved the `SYNTAX.md` file here, too, just for easier reference. Each of the different lexers is in this directory, in case I want to make general changes to all of them, and the `copy.sh` script copies them over to their respective parser directory (and on top of the current files).
+
+* `examples`: Some example Linguis programs.
+
+* `linguis-phase1`: As its name implies, this was the "first pass" at building Linguis in Python. It had its own AST, which I now consider to be a mistake--I had actually imagined using the Python AST directly, then went ahead and built my own AST for some reason. I didn't delete it from the repo (or shove it off into a branch) because I want to keep it around for a while for reference purposes.
+
+* `python`: Second pass, using Python AST as the result of the parser step.
+
+    * `parsers`: This directory contains the base-classes and shared code for all parsers. (There's not a lot, since I don't want to assume ANTLR for all of them.) **TODO:** At some point, I think I want to have one of the parsers built "by hand", just to make sure that there's nothing ANTLR-ish leaking out.
 

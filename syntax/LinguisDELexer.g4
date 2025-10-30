@@ -1,22 +1,22 @@
-// Howdy, English!
+// Guten morgen, Deutsch!
 lexer grammar LinguisLexer;
 
-Println  : 'println';
-Print    : 'print';
-Input    : 'input';
-Assert   : 'assert';
-Size     : 'size';
-Def      : 'def';
-If       : 'if';
-Else     : 'else';
-Return   : 'return';
-For      : 'for';
-While    : 'while';
-To       : 'to';
-Do       : 'do';
-End      : 'end';
-In       : 'in';
-Null     : 'null';
+Println  : '';
+Print    : '';
+Input    : '';
+Assert   : '';
+Size     : '';
+Def      : '';
+If       : '';
+Else     : '';
+Return   : '';
+For      : '';
+While    : '';
+To       : '';
+Do       : '';
+End      : '';
+In       : '';
+Null     : '';
 
 Or       : '||';
 And      : '&&';
@@ -46,14 +46,16 @@ QMark    : '?';
 Colon    : ':';
 
 Bool
- : 'true' 
- | 'false'
+ : ''
+ | ''
  ;
 
 Number
  : Int ( '.' Digit* )?
  ;
 
+// Include more Unicode characters?
+// I know we will want to include German common characters here!
 Identifier
  : [a-zA-Z_] [a-zA-Z_0-9]*
  ;

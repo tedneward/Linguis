@@ -1,22 +1,22 @@
-// Howdy, English!
+// Owdyhay, Igpay Atinway Englishway!
 lexer grammar LinguisLexer;
 
-Println  : 'println';
-Print    : 'print';
-Input    : 'input';
-Assert   : 'assert';
-Size     : 'size';
-Def      : 'def';
-If       : 'if';
-Else     : 'else';
-Return   : 'return';
-For      : 'for';
-While    : 'while';
-To       : 'to';
-Do       : 'do';
-End      : 'end';
-In       : 'in';
-Null     : 'null';
+Println  : 'intlnpray';
+Print    : 'intpray';
+Input    : 'inputway';
+Assert   : 'assertway';
+Size     : 'izesay';
+Def      : 'efday';
+If       : 'ifway';
+Else     : 'elseway';
+Return   : 'eturnray';
+For      : 'orfay';
+While    : 'ilewhay';
+To       : 'otay';
+Do       : 'oday';
+End      : 'endway';
+In       : 'inway';
+Null     : 'ullnay';
 
 Or       : '||';
 And      : '&&';
@@ -46,8 +46,8 @@ QMark    : '?';
 Colon    : ':';
 
 Bool
- : 'true' 
- | 'false'
+ : 'uetray' 
+ | 'alsefay'
  ;
 
 Number
