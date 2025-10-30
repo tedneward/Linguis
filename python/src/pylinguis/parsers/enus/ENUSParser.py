@@ -20,9 +20,7 @@ class ENUSParser(LinguisParserBase):
 
     def __init__(self) -> None:
         super().__init__()
-        self.logger = logging.getLogger()
-        self.logger.addHandler(logging.StreamHandler(sys.stdout))
-        self.logger.setLevel(logging.INFO)
+        self.logger = logging.getLogger("parsers.enus")
         self.logger.info("ENUSParser::__init__")
 
     def builtins(self) -> Dict[str, Any]:
@@ -281,8 +279,20 @@ class ENUSParser(LinguisParserBase):
 
         # Visit a parse tree produced by LinguisParser#eqExpression.
         def visitEqExpression(self, ctx:LinguisParser.EqExpressionContext):
-            self.logger.info("visiting Eq Expression")
-            return self.visitChildren(ctx)
+            l = self.visit(ctx.left)
+            r = self.visit(ctx.right)
+
+            op = None
+            if ctx.Equals() != None:
+                op = ast.Eq()
+            elif ctx.NEquals() != None:
+                op = ast.NotEq()
+            else:
+                raise Exception("Unknown operator in EqExpression")
+
+            retval = ast.Compare(left=l, comparators=[r], ops=[op])
+            self.logger.info(f"EqExpression -> {retval}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#andExpression.
@@ -326,7 +336,6 @@ class ENUSParser(LinguisParserBase):
 
             retval = ast.BinOp(left=l, right=r, op=op)
             self.logger.info(f"AddExpression -> {retval}")
-            #return self.visitChildren(ctx)
             return retval
 
 
@@ -355,8 +364,9 @@ class ENUSParser(LinguisParserBase):
 
         # Visit a parse tree produced by LinguisParser#nullExpression.
         def visitNullExpression(self, ctx:LinguisParser.NullExpressionContext):
-            self.logger.info("visiting Null Expression")
-            return self.visitChildren(ctx)
+            retval = ast.Constant(value=None)
+            self.logger.info(f"NullExpression -> {retval}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#functionCallExpression.
@@ -417,7 +427,9 @@ class ENUSParser(LinguisParserBase):
         # TODO: Need to figure out if/how ANTLR4 supports Unicode
 
         input_stream = InputStream(code)
-        lexer = LinguisLexer(input_stream)
+        lexer = LinguisLexer(input_stream) 
+            # In theory, I think right here we could swap in whichever lexer was
+            # called for, non?
         stream = CommonTokenStream(lexer)
         parser = LinguisParser(stream)
 
