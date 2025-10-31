@@ -1,31 +1,13 @@
-from ast import *
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
-class LinguisParserBase:
-    """ A base class for parsers for Linguis. """
-    def __init__(self) -> None:
-        pass
-
-    def builtins(self) -> Dict[str, Any]:
-        """ Returns a dictionary of built-in functions available in this parser's environment. """
-        return { }
-
-    def parse(self, code: str) -> Module:
-        """ Parses the entire code into a Python Module node. """
-
-        # For simplicity, this is a stub implementation.
-        # A real parser would tokenize and parse the input properly.
-        return Module()
-
-class EvaluationError(Exception):
-    def __init__(self, message):
-        super.__init__(self)
-        self.message = message
+from .LinguisParserBase import LinguisParserBase
+from .ANTLRSupport import ANTLRParserBase
 
 parsers : Dict[str, LinguisParserBase] = {}
 
 def register_parser(name: str, parser_cls: type[LinguisParserBase]) -> None:
     """ Registers a parser class under a given name/nationality. """
+
     # TODO: Verify parser_cls is a class and inherits from LinguisParserBase
 
     parsers[name] = parser_cls
@@ -45,6 +27,8 @@ def find_parser(language: str) -> Optional[LinguisParserBase]:
 # Register parser *classes* here (not instances)
 from pylinguis.parsers.enus import ENUSParser
 register_parser("en-us", ENUSParser)
+#from pylinguis.parsers.enpl import ENPLParser
+#register_parser("en-us", ENPLParser)
 #from pylinguis.parsers.fr import FRParser
 #register_parser("fr", FRParser)
 #from pylinguis.parsers.de import DEParser

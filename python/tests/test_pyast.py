@@ -165,8 +165,7 @@ for i in range(5):
         target=ast.Name(id='i', ctx=ast.Store()),
         iter=ast.Call(
             func=ast.Name(id='range', ctx=ast.Load()),
-            args=[ast.Constant(value=5)],
-            keywords=[]
+            args=[ast.Constant(value=5)]
         ),
         body=[
             ast.AugAssign(
@@ -187,6 +186,34 @@ for i in range(5):
 
     # The total should be the sum of 0 to 4
     assert local_vars['total'] == 10
+
+def test_loop_list() -> None:
+    """For loop over a list"""
+
+    code = """
+total = 0
+l = [0, 1, 2, 3, 4]
+for i in l:
+    total += i
+"""
+    print(ast.dump(ast.parse(code)))
+
+    assign_total = ast.Assign(targets=[ast.Name(id='total', ctx=ast.Store())], value=ast.Constant(value=0))
+    assign_list = ast.Assign(targets=[ast.Name(id='l', ctx=ast.Store())], 
+                             value=ast.List(elts=[ast.Constant(value=0), ast.Constant(value=1), ast.Constant(value=2), ast.Constant(value=3), ast.Constant(value=4)]))
+    for_loop = ast.For(target=ast.Name(id='i', ctx=ast.Store()),
+                       iter=ast.Name(id='l', ctx=ast.Load()),
+                       body=[ast.AugAssign(target=ast.Name(id='total', ctx=ast.Store()), op=ast.Add(), value=ast.Name(id='i', ctx=ast.Load()))])
+
+    module = ast.Module(body=[assign_total, assign_list, for_loop], type_ignores=[])
+    ast.fix_missing_locations(module)
+    code = compile(module, filename="<ast>", mode="exec")
+    local_vars = {}
+    exec(code, {}, local_vars)
+
+    # The total should be the sum of 0 to 4
+    assert local_vars['total'] == 10
+
 
 def test_input_and_println_statement() -> None:
     """ Test building and executing an input and print statement AST. """

@@ -300,11 +300,9 @@ end
     local_vars = run(code)
     assert local_vars['a'] == 10
 
-def ttest_while() -> None:
-    """Test parsing an while"""
-
+def test_while() -> None:
     code = """
-a = 0
+a = 0;
 while a < 3 do
     a = a + 1;
 end
@@ -312,15 +310,25 @@ end
     local_vars = run(code)
     assert local_vars['a'] == 3
 
-def ttest_for() -> None:
-    """Test parsing an for"""
-
+def test_whilefalse() -> None:
     code = """
-b = 0
-for a = 0 to 3 do
-    b = b + 1
+a = 5;
+while a < 3 do
+    a = a + 1;
 end
 """
     local_vars = run(code)
-    assert local_vars['a'] == 3
+    assert local_vars['a'] == 5
+
+def test_for() -> None:
+    """Test parsing an for"""
+
+    code = """
+b = 0;
+for a = 0 to 3 do
+    b = b + 1;
+end
+"""
+    local_vars = run(code)
+    assert local_vars['a'] == 2 # Upper end is exclusive
     assert local_vars['b'] == 3

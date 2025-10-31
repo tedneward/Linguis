@@ -64,7 +64,7 @@ Goal is to have this experiment "done" by the end of 2025.
 
 * `linguis-phase1`: As its name implies, this was the "first pass" at building Linguis in Python. It had its own AST, which I now consider to be a mistake--I had actually imagined using the Python AST directly, then went ahead and built my own AST for some reason. I didn't delete it from the repo (or shove it off into a branch) because I want to keep it around for a while for reference purposes.
 
-* `python`: Second pass, using Python AST as the result of the parser step.
+* `python`: Second pass, using Python AST as the result of the parser step. See the [README](python/README.md) for more details.
 
     * `parsers`: This directory contains the base-classes and shared code for all parsers. (There's not a lot, since I don't want to assume ANTLR for all of them.) **TODO:** At some point, I think I want to have one of the parsers built "by hand", just to make sure that there's nothing ANTLR-ish leaking out.
 
