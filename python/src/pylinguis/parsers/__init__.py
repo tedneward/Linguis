@@ -1,7 +1,7 @@
 from typing import Dict, Optional
 
 from .LinguisParserBase import LinguisParserBase
-from .ANTLRSupport import ANTLRParserBase
+from .ANTLRSupport import ANTLRParserBase # Used by other files importing this one; do not remove
 
 parsers : Dict[str, LinguisParserBase] = {}
 
@@ -28,7 +28,7 @@ def find_parser(language: str) -> Optional[LinguisParserBase]:
 from pylinguis.parsers.enus import ENUSParser
 register_parser("en-us", ENUSParser)
 #from pylinguis.parsers.enpl import ENPLParser
-#register_parser("en-us", ENPLParser)
+#register_parser("en-pl", ENPLParser)
 #from pylinguis.parsers.fr import FRParser
 #register_parser("fr", FRParser)
 #from pylinguis.parsers.de import DEParser

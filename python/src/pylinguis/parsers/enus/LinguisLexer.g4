@@ -1,3 +1,4 @@
+// Howdy, English!
 lexer grammar LinguisLexer;
 
 Println  : 'println';

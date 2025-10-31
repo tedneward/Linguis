@@ -1,3 +1,5 @@
+import ast
+from datetime import datetime
 import os
 import sys
 
@@ -25,6 +27,8 @@ def main() -> None:
     print(f"{banner()}")
 
     parser = "en-us"
+    save = False
+    savefile = None
     incoming = []
     if len(sys.argv) < 2:
         print_help()
@@ -33,6 +37,10 @@ def main() -> None:
             parser = arg[len("--parser="):]
         elif arg == "--help" or arg == "-h":
             print_help()
+        elif arg == "--save" or arg == "-s":
+            save = True
+        elif arg.startswith("--savefile="):
+            savefile = arg[len("--savefile="):]
         else:
             incoming.append(arg)
 
@@ -42,6 +50,9 @@ def main() -> None:
         sys.exit(1)
 
     for fname in incoming:
+        if save == True:
+            savefile = fname + ".py"
+
         if not os.path.exists(fname):
             print(f"File '{fname}' does not exist!")
             sys.exit(1)
@@ -50,6 +61,19 @@ def main() -> None:
 
             # Get the code into a string!
             module = p.parse_file(fname)
+
+            # Write the translated Python to a savefile?
+            if savefile != None:
+                date = datetime.now()
+                with open(savefile, "wt") as sf:
+                    print(f"Saving translation to {savefile}")
+                    sf.write(f"# Translated from Linguis source file {fname} on {date}:\n")
+                    with open(fname, "r") as linfile:
+                        for line in linfile.readlines():
+                            sf.write(f"# {line}")
+                    sf.write("#\n\n")
+                    sf.writelines(ast.unparse(module))
+
             code = compile(module, filename=fname, mode="exec")
             localvars = {}
             globalvars = globals() # Later ask parser to fill in globals
