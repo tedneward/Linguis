@@ -22,7 +22,7 @@ assignment
 
 functionCall
  : Identifier '(' exprList? ')' #identifierFunctionCall
- | Println '(' expression? ')'  #printlnFunctionCall
+ | Println '(' expression ')'  #printlnFunctionCall
  | Print '(' expression ')'     #printFunctionCall
  | Assert '(' expression ')'    #assertFunctionCall
  | Size '(' expression ')'      #sizeFunctionCall

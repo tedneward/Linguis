@@ -23,7 +23,11 @@ Integer and floating-point types support all the canonical binary mathematical o
 
 ### Decision-making (`if`)
 
+Decision-making requires some kind of "truthy" expression-yielding value.
+
 ### Finite iteration (`for`)
+
+Finite iteration is limited to integer counts, a la "for a = 0 to 3 do ... end"; no "iterable objects" like lists as in Python. (We could, I suppose, support "for a = [1,2,3]", meaning a gets an iterator and iterates through it, but that seems tangential to the language goal.)
 
 ### Infinite iteration (`while`)
 

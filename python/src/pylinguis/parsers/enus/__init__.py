@@ -37,12 +37,11 @@ class ENUSParser(ANTLRParserBase):
         language-dependent name for the binding. (Plus, I suppose, there could be builtins that
         are unique to each language for some reason, but I don't know what that would be.)
         """
-        return { 
-            "assert": lambda condition: condition or (_ for _ in ()).throw(EvaluationError("Assertion failed")),
+        return {
             "input": lambda prompt=None: input(prompt) if prompt is not None else input(),
             "println": lambda *args: print(*args),
             "print": lambda *args: print(*args, end=""),
-            "size": lambda lst: len(lst) if isinstance(lst, list) else 0,
+            "size": lambda lst: len(lst) if isinstance(lst, list) else None,
         }
 
     def getTruthy(self, text : str) -> bool:
@@ -73,7 +72,9 @@ class ENUSParser(ANTLRParserBase):
                 self.logger.debug(f"Block has a return: {ast.dump(ret_stmt)}")
                 statements.append(ret_stmt)
 
-            self.logger.debug(f"Block -> {[ast.dump(s) for s in statements]}")
+            for stmt in statements:
+                self.logger.debug(f"Block -> {ast.dump(stmt)}")
+
             return statements
 
 
@@ -126,8 +127,16 @@ class ENUSParser(ANTLRParserBase):
 
         # Visit a parse tree produced by LinguisParser#printlnFunctionCall.
         def visitPrintlnFunctionCall(self, ctx:LinguisParser.PrintlnFunctionCallContext):
-            self.logger.debug("PrintlnCall")
-            return self.visitChildren(ctx)
+            retval = None
+            param = None
+
+            if ctx.expression() != None:
+                param = self.visit(ctx.expression())
+            
+            retval = ast.Call(ast.Name("print", [param]))
+            
+            self.logger.debug(f"Println -> {ast.dump(retval)}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#printFunctionCall.
@@ -138,8 +147,10 @@ class ENUSParser(ANTLRParserBase):
 
         # Visit a parse tree produced by LinguisParser#assertFunctionCall.
         def visitAssertFunctionCall(self, ctx:LinguisParser.AssertFunctionCallContext):
-            self.logger.debug("AssertCall")
-            return self.visitChildren(ctx)
+            expr = self.visit(ctx.expression())
+            retval = ast.Assert(expr, msg = ast.Constant(f"Assertion Failure: {ctx.expression().getText()}"))
+            self.logger.debug(f"AssertCall -> {ast.dump(retval)}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#sizeFunctionCall.

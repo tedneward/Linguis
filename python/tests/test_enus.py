@@ -332,3 +332,14 @@ end
     local_vars = run(code)
     assert local_vars['a'] == 2 # Upper end is exclusive
     assert local_vars['b'] == 3
+
+def test_asserts() -> None:
+    code = """
+assert(true);
+assert(false);
+"""
+    try:
+        run(code)
+        assert False, "Shouldn't get here, we should've failed the second assertion!"
+    except AssertionError:
+        pass
