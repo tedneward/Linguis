@@ -37,6 +37,7 @@ class ENUSParser(ANTLRParserBase):
         language-dependent name for the binding. (Plus, I suppose, there could be builtins that
         are unique to each language for some reason, but I don't know what that would be.)
         """
+
         return {
             "input": lambda prompt=None: input(prompt) if prompt is not None else input(),
             "println": lambda *args: print(*args),
@@ -45,6 +46,8 @@ class ENUSParser(ANTLRParserBase):
         }
 
     def getTruthy(self, text : str) -> bool:
+        """Take the text and determine if it is a True or False literal value."""
+
         if text == "true": return True
         elif text == "false": return False
         else: raise EvaluationError(f"{text} not recognized as a boolean value")
@@ -284,8 +287,18 @@ class ENUSParser(ANTLRParserBase):
 
         # Visit a parse tree produced by LinguisParser#exprList.
         def visitExprList(self, ctx:LinguisParser.ExprListContext):
-            self.logger.debug("visiting ExprList")
-            return self.visitChildren(ctx)
+            retval = None
+
+            retval = []
+            for idx in range(0, ctx.getChildCount()):
+                child = ctx.expression(idx)
+                if child != None:
+                    childelt = self.visit(child)
+                    self.logger.debug(f"ExprList childelt = {ast.dump(childelt) if childelt != None else "(None)"}")
+                    retval.append(childelt)
+
+            self.logger.debug(f"ExprList -> {retval}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#boolExpression.
@@ -462,8 +475,18 @@ class ENUSParser(ANTLRParserBase):
 
         # Visit a parse tree produced by LinguisParser#listExpression.
         def visitListExpression(self, ctx:LinguisParser.ListExpressionContext):
-            self.logger.debug("visiting List Expression")
-            return self.visitChildren(ctx)
+            retval = None
+
+            lst = self.visit(ctx.list_())
+            if ctx.indexes() != None:
+                idxs = self.visit(ctx.indexes())
+                self.logger.debug(f"ListExpression indexes -> {idxs}")
+                # But what do we do with it after this?
+
+            retval = ast.List(elts=lst)
+
+            self.logger.debug(f"ListExpression -> {ast.dump(retval) if retval != None else "(None)"}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#inputExpression.
@@ -474,8 +497,9 @@ class ENUSParser(ANTLRParserBase):
 
         # Visit a parse tree produced by LinguisParser#list.
         def visitList(self, ctx:LinguisParser.ListContext):
-            self.logger.debug("visiting List")
-            return self.visitChildren(ctx)
+            retval = self.visit(ctx.exprList())
+            self.logger.debug(f"List -> {retval}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#indexes.

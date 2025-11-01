@@ -95,6 +95,14 @@ a = 5;
     local_vars = run(code)
     assert local_vars['a'] == 5
 
+def test_assignlist() -> None:
+    code = """
+a = [1, 2, 3];
+b = a[1];
+"""
+    local_vars = run(code)
+    assert local_vars['a'] == [1, 2, 3]
+
 ########################################
 ## Operators
 ##
