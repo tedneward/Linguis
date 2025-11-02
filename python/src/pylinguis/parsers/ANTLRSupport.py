@@ -23,8 +23,6 @@ class ANTLRParserBase(LinguisParserBase):
         lexer = self.getLexer(input_stream)
         stream = antlr4.CommonTokenStream(lexer)        
         parser = self.getParser(stream)
-
-        # The simple way
         tree = parser.block()
         self.logger.info(f"Parse Tree:\n{tree.toStringTree(recog=parser)}")
 

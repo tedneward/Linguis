@@ -17,12 +17,12 @@ statement
  ;
 
 assignment
- : Identifier indexes? '=' expression
+ : Identifier '=' expression
  ;
 
 functionCall
  : Identifier '(' exprList? ')' #identifierFunctionCall
- | Println '(' expression ')'  #printlnFunctionCall
+ | Println '(' expression ')'   #printlnFunctionCall
  | Print '(' expression ')'     #printFunctionCall
  | Assert '(' expression ')'    #assertFunctionCall
  | Size '(' expression ')'      #sizeFunctionCall
@@ -78,18 +78,12 @@ expression
  | Number                                               #numberExpression
  | Bool                                                 #boolExpression
  | Null                                                 #nullExpression
- | functionCall indexes?                                #functionCallExpression
- | list indexes?                                        #listExpression
- | Identifier indexes?                                  #identifierExpression
- | String indexes?                                      #stringExpression
- | '(' expression ')' indexes?                          #expressionExpression
+ | functionCall                                         #functionCallExpression
+ | '[' exprList? ']'                                    #listExpression
+ | Identifier                                           #identifierExpression
+ | Identifier '[' expression ']'                        #subscriptExpression
+ | String                                               #stringExpression
+ | '(' expression ')'                                   #expressionExpression
  | Input '(' String? ')'                                #inputExpression
  ;
 
-list
- : '[' exprList? ']'
- ;
-
-indexes
- : ( '[' expression ']' )+
- ;

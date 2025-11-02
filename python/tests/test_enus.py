@@ -102,6 +102,17 @@ b = a[1];
 """
     local_vars = run(code)
     assert local_vars['a'] == [1, 2, 3]
+    assert local_vars['b'] == 2
+    assert local_vars['b'] == local_vars['a'][1]
+
+def test_sizelist() -> None:
+    code = """
+a = [1, 2, 3];
+b = size(a);
+"""
+    local_vars = run(code)
+    assert local_vars['a'] == [1, 2, 3]
+    assert local_vars['b'] == 3
 
 ########################################
 ## Operators
@@ -351,3 +362,19 @@ assert(false);
         assert False, "Shouldn't get here, we should've failed the second assertion!"
     except AssertionError:
         pass
+
+def test_println() -> None:
+    code = """
+println("Hello Linguis");
+"""
+    run(code)
+    # Not really anything to assert until I capture stdout and compare it
+
+def test_print() -> None:
+    code = """
+print("Hello");
+print(" ");
+print("Linguis");
+"""
+    run(code)
+    # Not really anything to assert until I capture stdout and compare it

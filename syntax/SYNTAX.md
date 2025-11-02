@@ -19,6 +19,11 @@ Strings and lists cannot be negated.
 ### Binary
 Integer and floating-point types support all the canonical binary mathematical operators (`+`, `-`, `*`, `/`, and `%`), as well as exponential (`^`).
 
+### Misc
+"print", "println", "input", and "size" are all built-ins, not function definitions. (I should try to clean up that syntax, remove the parens and all that.)
+
+"size" can only be used on lists. (It turns into the Python `len()` call.)
+
 ## Flow control
 
 ### Decision-making (`if`)

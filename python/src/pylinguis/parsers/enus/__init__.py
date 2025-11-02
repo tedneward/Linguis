@@ -30,21 +30,6 @@ class ENUSParser(ANTLRParserBase):
     def getVisitor(self) -> antlr4.ParseTreeVisitor:
         return ENUSParser.Visitor(self)
 
-    def builtins(self) -> Dict[str, Any]:
-        """ 
-        Returns a dictionary of built-in functions available in this parser's environment.
-        This is necessary since the builtins are named values, and therefore need to have the
-        language-dependent name for the binding. (Plus, I suppose, there could be builtins that
-        are unique to each language for some reason, but I don't know what that would be.)
-        """
-
-        return {
-            "input": lambda prompt=None: input(prompt) if prompt is not None else input(),
-            "println": lambda *args: print(*args),
-            "print": lambda *args: print(*args, end=""),
-            "size": lambda lst: len(lst) if isinstance(lst, list) else None,
-        }
-
     def getTruthy(self, text : str) -> bool:
         """Take the text and determine if it is a True or False literal value."""
 
@@ -136,7 +121,8 @@ class ENUSParser(ANTLRParserBase):
             if ctx.expression() != None:
                 param = self.visit(ctx.expression())
             
-            retval = ast.Call(ast.Name("print", [param]))
+            retval = ast.Expr(value=ast.Call(func=ast.Name("print"), 
+                                             args=[ param ]))
             
             self.logger.debug(f"Println -> {ast.dump(retval)}")
             return retval
@@ -144,8 +130,18 @@ class ENUSParser(ANTLRParserBase):
 
         # Visit a parse tree produced by LinguisParser#printFunctionCall.
         def visitPrintFunctionCall(self, ctx:LinguisParser.PrintFunctionCallContext):
-            self.logger.debug("PrintCall")
-            return self.visitChildren(ctx)
+            retval = None
+            param = None
+
+            if ctx.expression() != None:
+                param = self.visit(ctx.expression())
+            
+            retval = ast.Expr(value=ast.Call(func=ast.Name("print"), 
+                                             args=[ param ], 
+                                             keywords=[ ast.keyword(arg='end', value=ast.Constant(value='')) ]))
+            
+            self.logger.debug(f"Print -> {ast.dump(retval)}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#assertFunctionCall.
@@ -158,8 +154,13 @@ class ENUSParser(ANTLRParserBase):
 
         # Visit a parse tree produced by LinguisParser#sizeFunctionCall.
         def visitSizeFunctionCall(self, ctx:LinguisParser.SizeFunctionCallContext):
-            self.logger.debug("SizeCall")
-            return self.visitChildren(ctx)
+            retval = None
+
+            target = self.visit(ctx.expression())
+            retval = ast.Call(func=ast.Name("len"), args=[ target ])
+
+            self.logger.debug(f"Size -> {ast.dump(retval)}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#ifStatement.
@@ -323,11 +324,22 @@ class ENUSParser(ANTLRParserBase):
             return retval
 
 
+        # Visit a parse tree produced by LinguisParser#subscriptExpression.
+        def visitSubscriptExpression(self, ctx:LinguisParser.SubscriptExpressionContext):
+            retval = None
+
+            name = ctx.getChild(0).getText()
+            value = self.visit(ctx.expression())
+
+            retval = ast.Subscript(ast.Name(id=name), slice=value)
+
+            self.logger.debug(f"SubscriptExpression -> {ast.dump(retval)}")
+            return retval
+
         # Visit a parse tree produced by LinguisParser#identifierExpression.
         def visitIdentifierExpression(self, ctx:LinguisParser.IdentifierExpressionContext):
             retval = ast.Name(ctx.getText(), ctx=ast.Load()) 
-                # Store() will need to be set by another element in the AST later once it's clear which is needed
-                # Actually I'm not sure that's true; it doesn't seem to be needed as I'm going through this, anyway....
+
             self.logger.debug(f"IdentifierExpression -> {ast.dump(retval)}")
             return retval
 
@@ -477,13 +489,7 @@ class ENUSParser(ANTLRParserBase):
         def visitListExpression(self, ctx:LinguisParser.ListExpressionContext):
             retval = None
 
-            lst = self.visit(ctx.list_())
-            if ctx.indexes() != None:
-                idxs = self.visit(ctx.indexes())
-                self.logger.debug(f"ListExpression indexes -> {idxs}")
-                # But what do we do with it after this?
-
-            retval = ast.List(elts=lst)
+            retval = ast.List(elts=self.visit(ctx.exprList()))
 
             self.logger.debug(f"ListExpression -> {ast.dump(retval) if retval != None else "(None)"}")
             return retval
@@ -492,18 +498,5 @@ class ENUSParser(ANTLRParserBase):
         # Visit a parse tree produced by LinguisParser#inputExpression.
         def visitInputExpression(self, ctx:LinguisParser.InputExpressionContext):
             self.logger.debug("visiting Input Expression")
-            return self.visitChildren(ctx)
-
-
-        # Visit a parse tree produced by LinguisParser#list.
-        def visitList(self, ctx:LinguisParser.ListContext):
-            retval = self.visit(ctx.exprList())
-            self.logger.debug(f"List -> {retval}")
-            return retval
-
-
-        # Visit a parse tree produced by LinguisParser#indexes.
-        def visitIndexes(self, ctx:LinguisParser.IndexesContext):
-            self.logger.debug("visiting Indexes")
             return self.visitChildren(ctx)
 

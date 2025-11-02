@@ -170,6 +170,15 @@ class LinguisParserListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by LinguisParser#subscriptExpression.
+    def enterSubscriptExpression(self, ctx:LinguisParser.SubscriptExpressionContext):
+        pass
+
+    # Exit a parse tree produced by LinguisParser#subscriptExpression.
+    def exitSubscriptExpression(self, ctx:LinguisParser.SubscriptExpressionContext):
+        pass
+
+
     # Enter a parse tree produced by LinguisParser#numberExpression.
     def enterNumberExpression(self, ctx:LinguisParser.NumberExpressionContext):
         pass
@@ -329,24 +338,6 @@ class LinguisParserListener(ParseTreeListener):
 
     # Exit a parse tree produced by LinguisParser#inputExpression.
     def exitInputExpression(self, ctx:LinguisParser.InputExpressionContext):
-        pass
-
-
-    # Enter a parse tree produced by LinguisParser#list.
-    def enterList(self, ctx:LinguisParser.ListContext):
-        pass
-
-    # Exit a parse tree produced by LinguisParser#list.
-    def exitList(self, ctx:LinguisParser.ListContext):
-        pass
-
-
-    # Enter a parse tree produced by LinguisParser#indexes.
-    def enterIndexes(self, ctx:LinguisParser.IndexesContext):
-        pass
-
-    # Exit a parse tree produced by LinguisParser#indexes.
-    def exitIndexes(self, ctx:LinguisParser.IndexesContext):
         pass
 
 

@@ -99,6 +99,11 @@ class LinguisParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by LinguisParser#subscriptExpression.
+    def visitSubscriptExpression(self, ctx:LinguisParser.SubscriptExpressionContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by LinguisParser#numberExpression.
     def visitNumberExpression(self, ctx:LinguisParser.NumberExpressionContext):
         return self.visitChildren(ctx)
@@ -186,16 +191,6 @@ class LinguisParserVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by LinguisParser#inputExpression.
     def visitInputExpression(self, ctx:LinguisParser.InputExpressionContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by LinguisParser#list.
-    def visitList(self, ctx:LinguisParser.ListContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by LinguisParser#indexes.
-    def visitIndexes(self, ctx:LinguisParser.IndexesContext):
         return self.visitChildren(ctx)
 
 
