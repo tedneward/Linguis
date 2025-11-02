@@ -1,0 +1,13 @@
+#!/bin/bash
+
+echo Generating EN-US parser from ANTLR grammar....
+cd src/pylinguis/parsers/enus; ./antlrgen.sh; cd ../../../..
+
+#echo Generating EN-PL parser from ANTLR grammar....
+#cd src/pylinguis/parsers/enpl; ./antlrgen.sh; cd ../../../..
+
+#echo Generating FR parser from ANTLR grammar....
+#cd src/pylinguis/parsers/fr; ./antlrgen.sh; cd ../../../..
+
+#echo Generating DE parser from ANTLR grammar....
+#cd src/pylinguis/parsers/de; ./antlrgen.sh; cd ../../../..

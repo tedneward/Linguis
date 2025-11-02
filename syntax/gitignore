@@ -1,0 +1,12 @@
+LinguisLexer.g4
+LinguisParser.g4
+LinguisLexer.interp
+LinguisLexer.py
+LinguisLexer.tokens
+LinguisParser.interp
+LinguisParser.py
+LinguisParser.tokens
+LinguisParserListener.py
+LinguisParserVisitor.py
+antlrgen.sh
+clean.sh
