@@ -4,6 +4,9 @@ Linguis using Python's AST as the execution backbone.
 
 This is the Python source root project, built and managed using the `uv` tool.
 
+### NOTE
+If the grammar changes for any reason, the `syntax` directory contains the single-source-of-truth version of the grammar. The `copy.sh` script in that directory copies the ANTLR g4 grammar files over to each of the ANTLR-dependent parsers. This is to keep them in sync and prevent "drift".
+
 ### Preparation
 Before the code can be run or test, the ANTLR-based parsers must be generated from their ANTLR source. The `prep.sh` script does this--it `cd`s into the parser's directory, runs the `antlrgen` script, and returns. This is to minimize the opportunities for "drift" to creep in between the grammar files and their generated outputs. (Were this a Java project, we'd be generating them as part of the Gradle build.)
 
