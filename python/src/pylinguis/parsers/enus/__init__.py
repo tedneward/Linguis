@@ -109,8 +109,20 @@ class ENUSParser(ANTLRParserBase):
 
         # Visit a parse tree produced by LinguisParser#identifierFunctionCall.
         def visitIdentifierFunctionCall(self, ctx:LinguisParser.IdentifierFunctionCallContext):
-            self.logger.debug("IdentifierFunctionCall")
-            return self.visitChildren(ctx)
+            retval = None
+
+            name = ctx.getChild(0).getText()
+
+            params = None
+            if ctx.exprList() != None:
+                params = self.visit(ctx.exprList())
+            
+            retval = ast.Expr(value=ast.Call(func=ast.Name(name), 
+                                             args=params, 
+                                             keywords=[ ]))
+            
+            self.logger.debug(f"IdentifierFnCall -> {ast.dump(retval)}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#printlnFunctionCall.
