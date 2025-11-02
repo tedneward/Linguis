@@ -245,8 +245,18 @@ class ENUSParser(ANTLRParserBase):
 
         # Visit a parse tree produced by LinguisParser#functionDecl.
         def visitFunctionDecl(self, ctx:LinguisParser.FunctionDeclContext):
-            self.logger.debug("visiting FunctionDecl")
-            return self.visitChildren(ctx)
+            retval = None
+
+            name = str(ctx.getChild(1).getText())
+            args = []
+            if ctx.idList() != None:
+                args = ast.arguments(self.visit(ctx.idList()))
+            block = self.visit(ctx.block())
+            self.logger.debug(f"FunctionDecl -> {name} {args} {block}")
+            retval = ast.FunctionDef(name=name, args=args, body=block)
+
+            self.logger.debug(f"FunctionDecl -> {ast.dump(retval)}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#forStatement.
@@ -346,33 +356,50 @@ class ENUSParser(ANTLRParserBase):
 
         # Visit a parse tree produced by LinguisParser#notExpression.
         def visitNotExpression(self, ctx:LinguisParser.NotExpressionContext):
-            self.logger.debug("visiting Not Expression")
-            return self.visitChildren(ctx)
+            retval = None
+
+            target = self.visit(ctx.expression())
+
+            retval = ast.UnaryOp(op=ast.Not(), values=[ target ])
+
+            self.logger.debug(f"NotExpression -> {ast.dump(retval)}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#orExpression.
         def visitOrExpression(self, ctx:LinguisParser.OrExpressionContext):
-            self.logger.debug("visiting Or Expression")
-            return self.visitChildren(ctx)
+            retval = None
+
+            left = self.visit(ctx.left)
+            right = self.visit(ctx.right)
+
+            retval = ast.BoolOp(op=ast.Or(), values=[ left, right ])
+
+            self.logger.debug(f"AndExpression -> {ast.dump(retval)}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#unaryMinusExpression.
         def visitUnaryMinusExpression(self, ctx:LinguisParser.UnaryMinusExpressionContext):
-            self.logger.debug("visiting UnaryMinute Expression")
-            return self.visitChildren(ctx)
+            retval = None
+
+            target = self.visit(ctx.expression())
+
+            retval = ast.UnaryOp(op=ast.USub(), values=[ target ])
+
+            self.logger.debug(f"UnaryMinusExpression -> {ast.dump(retval)}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#powerExpression.
         def visitPowerExpression(self, ctx:LinguisParser.PowerExpressionContext):
-            self.logger.debug("visiting Power Expression")
-            return self.visitChildren(ctx)
+            retval = ast.BinOp(left=self.visit(ctx.base), right=self.visit(ctx.expo), op=ast.Pow())
+            self.logger.debug(f"PowerExpression -> {ast.dump(retval)}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#eqExpression.
         def visitEqExpression(self, ctx:LinguisParser.EqExpressionContext):
-            l = self.visit(ctx.left)
-            r = self.visit(ctx.right)
-
             op = None
             if ctx.Equals() != None:
                 op = ast.Eq()
@@ -381,21 +408,24 @@ class ENUSParser(ANTLRParserBase):
             else:
                 raise Exception("Unknown operator in EqExpression")
 
-            retval = ast.Compare(left=l, comparators=[r], ops=[op])
+            retval = ast.Compare(left=self.visit(ctx.left), comparators=[self.visit(ctx.right)], ops=[op])
             self.logger.debug(f"EqExpression -> {ast.dump(retval)}")
             return retval
 
 
         # Visit a parse tree produced by LinguisParser#andExpression.
         def visitAndExpression(self, ctx:LinguisParser.AndExpressionContext):
-            self.logger.debug("visiting And Expression")
-            return self.visitChildren(ctx)
+            retval = ast.BoolOp(op=ast.And(), values=[ self.visit(ctx.left), self.visit(ctx.right) ])
+
+            self.logger.debug(f"AndExpression -> {ast.dump(retval)}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#inExpression.
         def visitInExpression(self, ctx:LinguisParser.InExpressionContext):
-            self.logger.debug("visiting In Expression")
-            return self.visitChildren(ctx)
+            retval = ast.BoolOp(op=ast.In(), values=[ self.visit(ctx.left), self.visit(ctx.right) ])
+            self.logger.debug(f"InExpression -> {ast.dump(retval)}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#stringExpression.

@@ -10,14 +10,7 @@ import ast
 ########################################
 ## TODO:
 ##
-## * Strings: indexes on strings (to substring)
-## * Lists: assignments, indexing, comparisons, whatever other operations 
-##   should be supported (like `in`), size
-## * Null: lots of operator tests (and determining what semantics 
-##   above/beyond what Python does)
 ## * Functions: function decls and invocation
-## * Builtins: invoking print(), println(), input(), etc. (This one will 
-##   require pytest manipulation, to capture stdout and provide stdin)
 ##
 
 ########################################
@@ -167,6 +160,15 @@ b = 5.0 % 2.0;
     local_vars = run(code)
     assert local_vars['a'] == 1
     assert local_vars['b'] == 1.0
+
+def test_exponentiation() -> None:
+    code = """
+a = 5 ^ 2;
+b = 2 ^ 5;
+"""
+    local_vars = run(code)
+    assert local_vars['a'] == 25
+    assert local_vars['b'] == 2 ** 5
 
 def test_numeric_comparison() -> None:
     code = """t1 = 1 < 2;
@@ -378,3 +380,28 @@ print("Linguis");
 """
     run(code)
     # Not really anything to assert until I capture stdout and compare it
+
+########################################
+## Functions
+##
+def test_decl() -> None:
+    code = """
+def hello()
+    print("Hello");
+end
+"""
+    local_vars = run(code)
+    assert local_vars['hello'] != None
+
+
+def test_call() -> None:
+    code = """
+def hello()
+    return 5;
+end
+a = hello();
+"""
+    local_vars = run(code)
+    assert local_vars['a'] == 5
+
+

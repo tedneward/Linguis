@@ -65,25 +65,25 @@ exprList
  ;
 
 expression
- : '-' expression                                       #unaryMinusExpression
- | '!' expression                                       #notExpression
+ : '-' expression                                                  #unaryMinusExpression
+ | '!' expression                                                  #notExpression
  | <assoc=right> base=expression '^' expo=expression               #powerExpression
  | left=expression op=( '*' | '/' | '%' ) right=expression         #multExpression
  | left=expression op=( '+' | '-' ) right=expression               #addExpression
  | left=expression op=( '>=' | '<=' | '>' | '<' ) right=expression #compExpression
  | left=expression op=( '==' | '!=' ) right=expression             #eqExpression
- | expression '&&' expression                           #andExpression
- | expression '||' expression                           #orExpression
- | expression In expression                             #inExpression
- | Number                                               #numberExpression
- | Bool                                                 #boolExpression
- | Null                                                 #nullExpression
- | functionCall                                         #functionCallExpression
- | '[' exprList? ']'                                    #listExpression
- | Identifier                                           #identifierExpression
- | Identifier '[' expression ']'                        #subscriptExpression
- | String                                               #stringExpression
- | '(' expression ')'                                   #expressionExpression
- | Input '(' String? ')'                                #inputExpression
+ | left=expression '&&' right=expression                           #andExpression
+ | left=expression '||' right=expression                           #orExpression
+ | left=expression In right=expression                             #inExpression
+ | Number                                                          #numberExpression
+ | Bool                                                            #boolExpression
+ | Null                                                            #nullExpression
+ | functionCall                                                    #functionCallExpression
+ | '[' exprList? ']'                                               #listExpression
+ | Identifier                                                      #identifierExpression
+ | Identifier '[' expression ']'                                   #subscriptExpression
+ | String                                                          #stringExpression
+ | '(' expression ')'                                              #expressionExpression
+ | Input '(' String? ')'                                           #inputExpression
  ;
 
