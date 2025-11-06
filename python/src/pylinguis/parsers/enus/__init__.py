@@ -177,35 +177,6 @@ class ENUSParser(ANTLRParserBase):
 
 
         # Visit a parse tree produced by LinguisParser#ifStatement.
-        # This one is a little tricky, since essentially Python wants to chain
-        # each else off of a corresponding if, a la:
-        #
-        # if x:
-        #     ...
-        # elif y:
-        #     ...
-        # else:
-        #     ...
-        # 
-        # Transforms into:
-        # 
-        # Module(
-        #     body=[
-        #         If(
-        #             test=Name(id='x', ctx=Load()),
-        #             body=[
-        #                 Expr(
-        #                     value=Constant(value=Ellipsis))],
-        #             orelse=[
-        #                 If(
-        #                     test=Name(id='y', ctx=Load()),
-        #                     body=[
-        #                         Expr(
-        #                             value=Constant(value=Ellipsis))],
-        #                     orelse=[
-        #                         Expr(
-        #                             value=Constant(value=Ellipsis))])])])
-        #
         def visitIfStatement(self, ctx:LinguisParser.IfStatementContext):
             retval = self.visit(ctx.ifStat())
 
