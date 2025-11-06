@@ -529,6 +529,14 @@ class ENUSParser(ANTLRParserBase):
 
         # Visit a parse tree produced by LinguisParser#inputExpression.
         def visitInputExpression(self, ctx:LinguisParser.InputExpressionContext):
-            self.logger.debug("visiting Input Expression")
-            return self.visitChildren(ctx)
+            retval = None
+
+            prompt = ast.Constant("")
+            if ctx.expression() != None:
+                prompt = self.visit(ctx.expression())
+            
+            retval = ast.Call(func=ast.Name("input"), args=[ prompt ])
+
+            self.logger.debug(f"InputExpression -> {ast.dump(retval) if retval != None else "(None)"}")
+            return retval
 
