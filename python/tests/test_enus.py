@@ -405,3 +405,14 @@ a = hello();
     assert local_vars['a'] == 5
 
 
+def test_call_onearg() -> None:
+    code = """
+def hello(arg)
+    return arg;
+end
+a = hello(5);
+"""
+    local_vars = run(code)
+    assert local_vars['a'] == 5
+
+

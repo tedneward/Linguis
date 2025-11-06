@@ -113,13 +113,14 @@ class ENUSParser(ANTLRParserBase):
 
             name = ctx.getChild(0).getText()
 
-            params = None
+            params = []
             if ctx.exprList() != None:
                 params = self.visit(ctx.exprList())
+            self.logger.debug(f"IdentifierFnCall params: {params}")
             
-            retval = ast.Expr(value=ast.Call(func=ast.Name(name), 
+            retval = ast.Call(func=ast.Name(name), 
                                              args=params, 
-                                             keywords=[ ]))
+                                             keywords=[ ])
             
             self.logger.debug(f"IdentifierFnCall -> {ast.dump(retval)}")
             return retval
@@ -304,8 +305,12 @@ class ENUSParser(ANTLRParserBase):
 
         # Visit a parse tree produced by LinguisParser#idList.
         def visitIdList(self, ctx:LinguisParser.IdListContext):
-            self.logger.debug("visiting IdList")
-            return self.visitChildren(ctx)
+            retval = []
+            for idx in range(0, ctx.getChildCount()):
+                child = ctx.getChild(idx)
+                retval.append(ast.arg(arg=child.getText()))
+            self.logger.debug(f"IdList -> {retval}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#exprList.
@@ -368,37 +373,25 @@ class ENUSParser(ANTLRParserBase):
 
         # Visit a parse tree produced by LinguisParser#notExpression.
         def visitNotExpression(self, ctx:LinguisParser.NotExpressionContext):
-            retval = None
-
             target = self.visit(ctx.expression())
-
             retval = ast.UnaryOp(op=ast.Not(), values=[ target ])
-
             self.logger.debug(f"NotExpression -> {ast.dump(retval)}")
             return retval
 
 
         # Visit a parse tree produced by LinguisParser#orExpression.
         def visitOrExpression(self, ctx:LinguisParser.OrExpressionContext):
-            retval = None
-
             left = self.visit(ctx.left)
             right = self.visit(ctx.right)
-
             retval = ast.BoolOp(op=ast.Or(), values=[ left, right ])
-
             self.logger.debug(f"AndExpression -> {ast.dump(retval)}")
             return retval
 
 
         # Visit a parse tree produced by LinguisParser#unaryMinusExpression.
         def visitUnaryMinusExpression(self, ctx:LinguisParser.UnaryMinusExpressionContext):
-            retval = None
-
             target = self.visit(ctx.expression())
-
             retval = ast.UnaryOp(op=ast.USub(), values=[ target ])
-
             self.logger.debug(f"UnaryMinusExpression -> {ast.dump(retval)}")
             return retval
 
@@ -428,7 +421,6 @@ class ENUSParser(ANTLRParserBase):
         # Visit a parse tree produced by LinguisParser#andExpression.
         def visitAndExpression(self, ctx:LinguisParser.AndExpressionContext):
             retval = ast.BoolOp(op=ast.And(), values=[ self.visit(ctx.left), self.visit(ctx.right) ])
-
             self.logger.debug(f"AndExpression -> {ast.dump(retval)}")
             return retval
 
@@ -503,8 +495,9 @@ class ENUSParser(ANTLRParserBase):
 
         # Visit a parse tree produced by LinguisParser#functionCallExpression.
         def visitFunctionCallExpression(self, ctx:LinguisParser.FunctionCallExpressionContext):
-            self.logger.debug("visiting FuncCall Expression")
-            return self.visitChildren(ctx)
+            retval = self.visit(ctx.functionCall())
+            self.logger.debug(f"FuncCallExpression -> {ast.dump(retval)}")
+            return retval
 
 
         # Visit a parse tree produced by LinguisParser#multExpression.
@@ -529,10 +522,7 @@ class ENUSParser(ANTLRParserBase):
 
         # Visit a parse tree produced by LinguisParser#listExpression.
         def visitListExpression(self, ctx:LinguisParser.ListExpressionContext):
-            retval = None
-
             retval = ast.List(elts=self.visit(ctx.exprList()))
-
             self.logger.debug(f"ListExpression -> {ast.dump(retval) if retval != None else "(None)"}")
             return retval
 
