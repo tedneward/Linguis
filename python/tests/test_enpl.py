@@ -8,12 +8,6 @@ from pylinguis.parsers import find_parser
 import ast
 
 ########################################
-## TODO:
-##
-## * Functions: function decls and invocation
-##
-
-########################################
 ## Utilities and setup
 ##
 
