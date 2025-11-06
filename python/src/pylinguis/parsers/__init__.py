@@ -29,7 +29,7 @@ from pylinguis.parsers.enus import ENUSParser
 register_parser("en-us", ENUSParser)
 from pylinguis.parsers.enpl import ENPLParser
 register_parser("en-pl", ENPLParser)
-#from pylinguis.parsers.fr import FRParser
-#register_parser("fr", FRParser)
+from pylinguis.parsers.fr import FRParser
+register_parser("fr", FRParser)
 #from pylinguis.parsers.de import DEParser
 #register_parser("de", DEParser)

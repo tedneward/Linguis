@@ -38,7 +38,7 @@ Since I like it, I'll use ANTLR for generating the different language parsers; i
 
 - [x] Migrate off of my AST and over to Python's AST.
 
-- [ ] Since I know French (`fr-fr`) reasonably well and German (`de-de`) passably so, target those two languages as second and third syntaxes. Should really be a copy of the en-us parser over and change just the keywords in the g4 parser grammar file.... emphasis on *should*. Oh heck, let's do Pig Latin ("EN-PL") as well, just for fun.
+- [ ] Since I know French (`fr`) reasonably well and German (`de`) passably so, target those two languages as second and third syntaxes. Should really be a copy of the `en-us` parser over and change just the keywords in the g4 parser grammar file.... emphasis on *should*. Oh heck, let's do Pig Latin (`en-pl`) as well, just for fun.
 
 - [ ] Support an inline "keyword switch" pragma (a la `#parser en-us` or `#parser fr`, whatever's stored in the parsers dictionary) to allow us to switch mid-file to a different lexer. Already-established scopes would not change. I'm thinking the driver would just scan the whole file first, find each `#parser` line, and figuratively `split()` the whole thing before handing each segment off to its own parser, and then the whole would be collected into a single `ast.Module` for execution. (Maybe?)
 

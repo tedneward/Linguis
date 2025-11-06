@@ -20,12 +20,12 @@ cp antlrgen.sh ../python/src/pylinguis/parsers/enpl/antlrgen.sh
 cp clean.sh ../python/src/pylinguis/parsers/enpl/clean.sh
 cp gitignore ../python/src/pylinguis/parsers/enpl/.gitignore
 
-#echo Copying FR files/scripts....
-#cp LinguisFRLexer.g4 ../python/src/pylinguis/parsers/fr/LinguisLexer.g4
-#cp LinguisParser.g4 ../python/src/pylinguis/parsers/fr/LinguisParser.g4
-#cp antlrgen.sh ../python/src/pylinguis/parsers/fr/antlrgen.sh
-#cp clean.sh ../python/src/pylinguis/parsers/fr/clean.sh
-#cp gitignore ../python/src/pylinguis/parsers/fr/.gitignore
+echo Copying FR files/scripts....
+cp LinguisFRLexer.g4 ../python/src/pylinguis/parsers/fr/LinguisLexer.g4
+cp LinguisParser.g4 ../python/src/pylinguis/parsers/fr/LinguisParser.g4
+cp antlrgen.sh ../python/src/pylinguis/parsers/fr/antlrgen.sh
+cp clean.sh ../python/src/pylinguis/parsers/fr/clean.sh
+cp gitignore ../python/src/pylinguis/parsers/fr/.gitignore
 
 #echo Copying DE files/scripts....
 #cp LinguisDELexer.g4 ../python/src/pylinguis/parsers/de/LinguisLexer.g4
